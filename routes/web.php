@@ -36,7 +36,10 @@ Route::middleware('auth')->group(function () {
     Route::resource("machines", MachineController::class);
     Route::get('/dashboard', [MachineController::class, 'dashboard'])->name('dashboard');
     Route::resource("users", UserController::class);
+    Route::get('/account/password', [UserController::class, 'editPassword'])->name('account.password.edit');
+    Route::put('/account/password', [UserController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/users/{user}/send-email', [UserController::class, 'sendEmail'])->name('users.sendEmail');
+    Route::post('/users/{user}/send-reset', [UserController::class, 'sendResetLink'])->name('users.sendResetLink');
     Route::post('/users/{user}/enable', [UserController::class, 'enable'])->name('users.enable');
     Route::post('/users/{user}/disable', [UserController::class, 'disable'])->name('users.disable');
 });

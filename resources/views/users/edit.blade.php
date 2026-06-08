@@ -7,10 +7,24 @@
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Edit User</h5>
-                        <a href="{{ route('users.index') }}" class="btn btn-sm btn-light">Back to List</a>
+                        <div class="d-flex gap-2">
+                            <form action="{{ route('users.sendResetLink', $user) }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-warning">Send Password Reset</button>
+                            </form>
+                            <a href="{{ route('users.index') }}" class="btn btn-sm btn-light">Back to List</a>
+                        </div>
                     </div>
 
                     <div class="card-body">
+                        @if (session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
+
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
@@ -50,6 +64,17 @@
                                     @endforeach
                                 </select>
                                 @error('role_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select @error('status') is-invalid @enderror">
+                                    <option value="1" {{ old('status', $user->status) ? 'selected' : '' }}>Enabled</option>
+                                    <option value="0" {{ ! old('status', $user->status) ? 'selected' : '' }}>Disabled</option>
+                                </select>
+                                @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

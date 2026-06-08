@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand fw-semibold" href="{{ route('dashboard') }}">
                 {{ config('app.name', 'Machine Master') }}
@@ -27,13 +27,16 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('machines.*') ? 'active' : '' }}" href="{{ route('machines.index') }}">Machines</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Users</a>
-                        </li>
+                        @if(auth()->user()->isSuperAdmin())
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Users</a>
+                            </li>
+                        @endif
                     </ul>
 
                     <div class="d-flex align-items-center gap-3">
                         <span class="text-white-50 small">{{ auth()->user()->name }}</span>
+                        <a href="{{ route('account.password.edit') }}" class="btn btn-outline-light btn-sm">Change Password</a>
                         <form method="POST" action="{{ route('logout') }}" class="m-0">
                             @csrf
                             <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>

@@ -6,15 +6,17 @@ use App\Models\Department;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:superadmin');
+        $this->middleware('role:superadmin')->except(['editPassword', 'updatePassword']);
     }
 
     /**
@@ -109,11 +111,58 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
+            'status' => 'required|boolean',
         ]);
 
-        $user->update($request->only(['name', 'email', 'role_id', 'department_id']));
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role_id' => $request->role_id,
+            'department_id' => $request->department_id,
+            'status' => $request->boolean('status'),
+        ]);
 
         return redirect()->route('users.index')->with('success', 'User updated.');
+    }
+
+    public function sendResetLink(User $user)
+    {
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $user->update(['status' => false]);
+        }
+
+        return redirect()->route('users.edit', $user)->with($status === Password::RESET_LINK_SENT ? ['success' => 'Password reset email sent. User has been disabled until they reset their password.'] : ['error' => __($status)]);
+    }
+
+    public function editPassword()
+    {
+        return view('users.change-password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'The current password is incorrect.']);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Password updated successfully. Please log in again.');
     }
 
     /**
