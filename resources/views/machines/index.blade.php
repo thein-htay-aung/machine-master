@@ -6,10 +6,15 @@
 
         <div class="card shadow-sm">
 
-            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Machine List</h5>
-                <div>
-                    <a href="{{ route("machines.create") }}" class="btn btn-sm btn-light">+ Add New Machine</a>
+            <div class="card-header bg-primary text-white py-3">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                    <h5 class="mb-0">Machine List</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        @if(auth()->user()->isSuperAdmin())
+                            <a href="{{ route('machines.import') }}" class="btn btn-sm btn-light">Import Excel</a>
+                        @endif
+                        <a href="{{ route('machines.create') }}" class="btn btn-sm btn-light">+ Add New Machine</a>
+                    </div>
                 </div>
             </div>
 
@@ -21,16 +26,19 @@
                     </div>
                 @endif
 
-                <div class="mb-3">
-                    <form method="GET" action="{{ route('machines.index') }}" class="row g-3">
-                        <div class="col-md-3">
-                            <input type="text" name="control_no" value="{{ request('control_no') }}" class="form-control" placeholder="Control No.">
+                <div class="mb-4">
+                    <form method="GET" action="{{ route('machines.index') }}" class="row gx-3 gy-3 align-items-end">
+                        <div class="col-md-2">
+                            <label class="form-label visually-hidden" for="filter-control_no">Control No.</label>
+                            <input id="filter-control_no" type="text" name="control_no" value="{{ request('control_no') }}" class="form-control" placeholder="Control No.">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Name">
+                            <label class="form-label visually-hidden" for="filter-name">Name</label>
+                            <input id="filter-name" type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Name">
                         </div>
                         <div class="col-md-2">
-                            <select name="status_id" class="form-select">
+                            <label class="form-label visually-hidden" for="filter-status">Status</label>
+                            <select id="filter-status" name="status_id" class="form-select">
                                 <option value="">All Statuses</option>
                                 @foreach($statuses as $status)
                                     <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
@@ -38,16 +46,19 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <select name="plant_id" class="form-select">
+                            <label class="form-label visually-hidden" for="filter-plant">Plant</label>
+                            <select id="filter-plant" name="plant_id" class="form-select">
                                 <option value="">All Plants</option>
                                 @foreach($plants as $plant)
                                     <option value="{{ $plant->id }}" {{ request('plant_id') == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('machines.index') }}" class="btn btn-secondary ms-2">Clear</a>
+                        <div class="col-md-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="submit" class="btn btn-primary w-90">Filter</button>
+                                <a href="{{ route('machines.index') }}" class="btn btn-secondary w-90">Clear</a>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -108,7 +119,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No machines found.</td>
+                                    <td colspan="9" class="text-center">No machines found.</td>
                                 </tr>
                             @endforelse
 

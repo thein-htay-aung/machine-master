@@ -34,6 +34,8 @@ class MachineFactory extends Factory
             'dimension' => $this->faker->numerify('##x##x## cm'),
             'weight' => $this->faker->numerify('### kg'),
             'electrical' => $this->faker->randomElement(['220V', '380V', '110V']),
+            'currency' => $this->faker->randomElement(['MMK', 'USD', 'SGD', 'JPY', 'CNY']),
+            'unit_price' => $this->faker->randomFloat(2, 100, 100000),
             'is_fixed_asset' => $this->faker->boolean(80),
             'remark' => $this->faker->sentence(),
             'plant_id' => $plantId,

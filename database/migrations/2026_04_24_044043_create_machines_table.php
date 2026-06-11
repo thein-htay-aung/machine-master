@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('dimension')->nullable();
             $table->string('weight')->nullable();
             $table->string('electrical')->nullable();
+            $table->enum('currency', ['MMK', 'USD', 'SGD', 'JPY', 'CNY'])->nullable();
+            $table->decimal('unit_price', 15, 2)->nullable();
             $table->boolean('is_fixed_asset')->default(false);
             $table->text('remark')->nullable();
             $table->foreignId('plant_id')->constrained()->restrictOnDelete();

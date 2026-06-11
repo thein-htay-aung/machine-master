@@ -145,6 +145,27 @@
                             @enderror
                         </div>
 
+                        <div class="col-md-4">
+                            <label class="form-label">Currency</label>
+                            <select name="currency" class="form-select @error('currency') is-invalid @enderror">
+                                <option value="">Select currency</option>
+                                @foreach(['MMK', 'USD', 'SGD', 'JPY', 'CNY'] as $currency)
+                                    <option value="{{ $currency }}" {{ old('currency') === $currency ? 'selected' : '' }}>{{ $currency }}</option>
+                                @endforeach
+                            </select>
+                            @error('currency')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" name="unit_price" step="0.01" min="0" value="{{ old('unit_price') }}" class="form-control @error('unit_price') is-invalid @enderror">
+                            @error('unit_price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-12">
                             <label class="form-label">Remark</label>
                             <textarea name="remark" rows="3" class="form-control @error('remark') is-invalid @enderror">{{ old('remark') }}</textarea>

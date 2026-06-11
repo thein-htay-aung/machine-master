@@ -54,6 +54,14 @@
                         <p>{{ $machine->plant->name }}</p>
                     </div>
                     <div class="col-md-6">
+                        <strong>Currency</strong>
+                        <p>{{ $machine->currency ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Unit Price</strong>
+                        <p>{{ $machine->unit_price !== null ? number_format($machine->unit_price, 2) : '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
                         <strong>Dimension</strong>
                         <p>{{ $machine->dimension ?? '-' }}</p>
                     </div>

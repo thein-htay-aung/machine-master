@@ -31,6 +31,11 @@ Route::post('/email/verification-notification', [EmailVerificationController::cl
     ->middleware(['auth', 'throttle:6,1'])
     ->name('verification.send');
 
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
+    Route::get('/machines/import', [MachineController::class, 'importForm'])->name('machines.import');
+    Route::post('/machines/import', [MachineController::class, 'import'])->name('machines.import.store');
+});
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::resource("machines", MachineController::class);

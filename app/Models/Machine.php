@@ -24,6 +24,8 @@ class Machine extends Model
         'dimension',
         'weight',
         'electrical',
+        'currency',
+        'unit_price',
         'is_fixed_asset',
         'remark',
         'plant_id',
