@@ -4,41 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Plant;
-use App\Models\Status;
+use App\Models\Category;
+use App\Models\Unit;
 use App\Models\User;
 
-class Machine extends Model
+class Part extends Model
 {
-    /** @use HasFactory<\Database\Factories\MachineFactory> */
     use HasFactory;
 
     protected $fillable = [
-        'control_no',
         'name',
-        'brand',
         'model',
-        'serial_no',
-        'supplier',
-        'arrived_date',
+        'brand',
         'location',
-        'dimension',
-        'weight',
-        'electrical',
-        'currency',
-        'unit_price',
-        'is_fixed_asset',
-        'remark',
-        'plant_id',
-        'status_id',
+        'category_id',
+        'is_active',
+        'unit_id',
+        'min_qty',
         'image',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
-        'arrived_date' => 'date',
-        'is_fixed_asset' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     protected $appends = [
@@ -52,14 +41,14 @@ class Machine extends Model
             : asset('images/machine-placeholder.svg');
     }
 
-    public function plant()
+    public function category()
     {
-        return $this->belongsTo(Plant::class);
+        return $this->belongsTo(Category::class);
     }
 
-    public function status()
+    public function unit()
     {
-        return $this->belongsTo(Status::class);
+        return $this->belongsTo(Unit::class);
     }
 
     public function createdBy()

@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MachineController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -39,6 +42,9 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::resource("machines", MachineController::class);
+    Route::resource("units", UnitController::class);
+    Route::resource("categories", CategoryController::class);
+    Route::resource("parts", PartController::class);
     Route::get('/dashboard', [MachineController::class, 'dashboard'])->name('dashboard');
     Route::resource("users", UserController::class);
     Route::get('/account/password', [UserController::class, 'editPassword'])->name('account.password.edit');

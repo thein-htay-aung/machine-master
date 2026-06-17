@@ -6,6 +6,29 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media (min-width: 768px) {
+            #sidebarMenu {
+                position: sticky;
+                top: 56px;
+                height: calc(100vh - 56px);
+                overflow-y: auto;
+            }
+        }
+
+        .parts-toggle {
+            position: relative;
+        }
+
+        .parts-toggle::after {
+            content: '+';
+            margin-left: auto;
+        }
+
+        .parts-toggle:not(.collapsed)::after {
+            content: '-';
+        }
+    </style>
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
@@ -39,7 +62,7 @@
     <div class="container-fluid px-0">
         <div class="row g-0">
             @auth
-                <aside id="sidebarMenu" class="collapse d-md-block col-md-2 col-lg-2 bg-dark text-white border-end border-secondary min-vh-100" style="min-width:140px;">
+                <aside id="sidebarMenu" class="collapse d-md-block col-md-2 col-lg-2 bg-dark text-white border-end border-secondary" style="min-width:140px; z-index: 1020;">
                     <div class="p-2">
                         {{-- <h6 class="text-uppercase text-white-50 mb-3">Menu</h6> --}}
                         <ul class="nav nav-pills flex-column">
@@ -48,6 +71,27 @@
                             </li>
                             <li class="nav-item mb-1">
                                 <a class="nav-link {{ request()->routeIs('machines.*') ? 'active' : 'text-white-50' }}" href="{{ route('machines.index') }}">Machines</a>
+                            </li>
+                            <li class="nav-item mb-1">
+                                @php
+                                    $partsOpen = request()->routeIs('units.*') || request()->routeIs('categories.*') || request()->routeIs('parts.*');
+                                @endphp
+                                <a class="nav-link text-white-50 parts-toggle {{ $partsOpen ? '' : 'collapsed' }} d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#partsSubmenu" role="button" aria-expanded="{{ $partsOpen ? 'true' : 'false' }}" aria-controls="partsSubmenu">
+                                    <span>Parts</span>
+                                </a>
+                                <div class="collapse {{ $partsOpen ? 'show' : '' }}" id="partsSubmenu">
+                                    <ul class="nav flex-column ms-3 mt-2">
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('units.*') ? 'active' : 'text-white-50' }}" href="{{ route('units.index') }}">Unit Master</a>
+                                        </li>
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : 'text-white-50' }}" href="{{ route('categories.index') }}">Category Master</a>
+                                        </li>
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('parts.*') ? 'active' : 'text-white-50' }}" href="{{ route('parts.index') }}">Part Master</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
                             @if(auth()->user()->isSuperAdmin())
                                 <li class="nav-item mb-1">

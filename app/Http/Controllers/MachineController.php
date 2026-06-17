@@ -93,6 +93,8 @@ class MachineController extends Controller
         }
 
         $validated['is_fixed_asset'] = $request->boolean('is_fixed_asset');
+        $validated['created_by'] = $request->user()->id;
+        $validated['updated_by'] = $request->user()->id;
 
         Machine::create($validated);
 
@@ -156,6 +158,7 @@ class MachineController extends Controller
         }
 
         $validated['is_fixed_asset'] = $request->boolean('is_fixed_asset');
+        $validated['updated_by'] = $request->user()->id;
 
         $machine->update($validated);
 
@@ -304,7 +307,9 @@ class MachineController extends Controller
         }
 
         $timestamp = now();
-        $insertData = array_map(function ($rowData) use ($timestamp) {
+        $userId = $request->user()?->id;
+
+        $insertData = array_map(function ($rowData) use ($timestamp, $userId) {
             return [
                 'control_no' => $rowData['control_no'],
                 'name' => $rowData['name'],
@@ -320,6 +325,8 @@ class MachineController extends Controller
                 'status_id' => 1,
                 'is_fixed_asset' => false,
                 'remark' => $rowData['remark'],
+                'created_by' => $userId,
+                'updated_by' => $userId,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];

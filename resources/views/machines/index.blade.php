@@ -55,9 +55,13 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <div class="d-flex flex-wrap gap-2">
-                                <button type="submit" class="btn btn-primary w-90">Filter</button>
-                                <a href="{{ route('machines.index') }}" class="btn btn-secondary w-90">Clear</a>
+                            <div class="row gx-2">
+                                <div class="col-6">
+                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{{ route('machines.index') }}" class="btn btn-secondary w-100">Clear</a>
+                                </div>
                             </div>
                         </div>
                     </form>
