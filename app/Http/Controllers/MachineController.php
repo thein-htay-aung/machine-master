@@ -159,7 +159,7 @@ class MachineController extends Controller
 
         $machine->update($validated);
 
-        return redirect()->route('machines.index')->with('info', 'Machine updated successfully.');
+        return redirect()->route('machines.index', $request->query())->with('info', 'Machine updated successfully.');
     }
 
     /**

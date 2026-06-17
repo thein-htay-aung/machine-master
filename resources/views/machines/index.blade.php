@@ -2,9 +2,9 @@
 
 @section('content')
 
-    <div class="container">
+    <div class="container-fluid px-4">
 
-        <div class="card shadow-sm">
+        <div class="card shadow-sm w-100">
 
             <div class="card-header bg-primary text-white py-3">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
@@ -63,7 +63,7 @@
                     </form>
                 </div>
 
-                <div class="table-responsive" style="max-height: 600px">
+                <div class="table-responsive" style="max-height: 550px">
                     <table class="table table-hover table-bordered">
                         <thead class="table-success">
                             <tr>
@@ -75,6 +75,7 @@
                                 <th scope="col">Brand</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Plant</th>
+                                <th scope="col">Location</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -105,10 +106,11 @@
                                         @endif
                                     </td>
                                     <td class="text-center align-middle">{{ $machine->plant->name }}</td>
+                                    <td class="align-middle">{{ $machine->location }}</td>
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-1">
                                             <a href="{{ route('machines.show', $machine->id) }}" class="btn btn-sm btn-warning">Show</a>
-                                            <a href="{{ route('machines.edit', $machine->id) }}" class="btn btn-sm btn-info">Edit</a>
+                                            <a href="{{ route('machines.edit', $machine->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-info">Edit</a>
                                             <form action="{{ route('machines.destroy', $machine->id) }}" method="POST" onsubmit="return confirm('Delete this machine?');">
                                                 @csrf
                                                 @method('DELETE')
