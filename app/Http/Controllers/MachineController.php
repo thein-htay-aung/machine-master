@@ -159,17 +159,17 @@ class MachineController extends Controller
 
         $machine->update($validated);
 
-        return redirect()->route('machines.index', $request->query())->with('info', 'Machine updated successfully.');
+        return redirect()->route('machines.index')->with('info', 'Machine updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Machine $machine)
+    public function destroy(Request $request, Machine $machine)
     {
         $machine->delete();
 
-        return redirect()->route('machines.index')->with('info', 'Machine deleted successfully.');
+        return redirect()->route('machines.index', $request->query())->with('info', 'Machine deleted successfully.');
     }
 
     public function dashboard()

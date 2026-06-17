@@ -111,7 +111,7 @@
                                         <div class="d-flex justify-content-center gap-1">
                                             <a href="{{ route('machines.show', $machine->id) }}" class="btn btn-sm btn-warning">Show</a>
                                             <a href="{{ route('machines.edit', $machine->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-info">Edit</a>
-                                            <form action="{{ route('machines.destroy', $machine->id) }}" method="POST" onsubmit="return confirm('Delete this machine?');">
+                                            <form action="{{ route('machines.destroy', $machine->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this machine?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
