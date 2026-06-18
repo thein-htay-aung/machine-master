@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Plant;
 use App\Models\Status;
 use App\Models\User;
+use App\Models\Part;
 
 class Machine extends Model
 {
@@ -60,6 +61,11 @@ class Machine extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    public function parts()
+    {
+        return $this->belongsToMany(Part::class, 'machine_part')->withPivot('quantity', 'notes')->withTimestamps();
     }
 
     public function createdBy()

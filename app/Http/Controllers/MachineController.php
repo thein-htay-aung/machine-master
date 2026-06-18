@@ -6,7 +6,9 @@ use App\Imports\MachineImport;
 use App\Models\Machine;
 use App\Models\Plant;
 use App\Models\Status;
+use App\Models\Part;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -106,7 +108,7 @@ class MachineController extends Controller
      */
     public function show(Machine $machine)
     {
-        $machine->load(['plant', 'status']);
+        $machine->load(['plant', 'status', 'parts.unit', 'parts.category']);
 
         return view('machines.show', compact('machine'));
     }
@@ -162,7 +164,7 @@ class MachineController extends Controller
 
         $machine->update($validated);
 
-        return redirect()->route('machines.index')->with('info', 'Machine updated successfully.');
+        return redirect()->route('machines.index', $request->query())->with('info', 'Machine updated successfully.');
     }
 
     /**
@@ -185,9 +187,10 @@ class MachineController extends Controller
             return $group->count();
         });
         $fixedAssetsCount = Machine::where('is_fixed_asset', true)->count();
+        $totalPartsQuantity = DB::table('machine_part')->sum('quantity');
         $recentMachines = Machine::with(['plant', 'status'])->orderBy('created_at', 'desc')->limit(5)->get();
 
-        return view('dashboard', compact('totalMachines', 'machinesByStatus', 'machinesByPlant', 'fixedAssetsCount', 'recentMachines'));
+        return view('dashboard', compact('totalMachines', 'machinesByStatus', 'machinesByPlant', 'fixedAssetsCount', 'totalPartsQuantity', 'recentMachines'));
     }
 
     public function importForm()
@@ -335,6 +338,99 @@ class MachineController extends Controller
         Machine::insert($insertData);
 
         return redirect()->route('machines.index')->with('info', count($insertData) . ' machines imported successfully.');
+    }
+
+    /**
+     * Show BOM editor for a machine.
+     */
+    public function editParts(Machine $machine)
+    {
+        $parts = Part::with(['category', 'unit'])->orderBy('name')->get();
+        $machine->load('parts');
+
+        return view('machines.parts', compact('machine', 'parts'));
+    }
+
+    /**
+     * Return a partial list of machines for copying BOM (AJAX).
+     */
+    public function listForCopy(Request $request, Machine $machine)
+    {
+        $q = $request->query('q', null);
+
+        $query = Machine::with('plant')->where('id', '!=', $machine->id)->orderBy('control_no');
+
+        if ($q !== null && $q !== '') {
+            $query->where(function ($b) use ($q) {
+                $b->where('control_no', 'like', '%' . $q . '%')
+                  ->orWhere('name', 'like', '%' . $q . '%');
+            });
+        } else {
+            // By default, show machines that have the same name as the source machine
+            $query->where('name', $machine->name);
+        }
+
+        $machines = $query->paginate(10)->withQueryString();
+
+        return view('machines._copy_list', compact('machines', 'machine'));
+    }
+
+    /**
+     * Copy BOM from $machine to selected target machines.
+     */
+    public function copyTo(Request $request, Machine $machine)
+    {
+        $request->validate([
+            'targets' => 'required|array',
+            'targets.*' => 'exists:machines,id|different:'.$machine->id,
+        ]);
+
+        $targets = $request->input('targets', []);
+
+        // Prepare sync data from source machine parts
+        $syncData = [];
+        foreach ($machine->parts as $part) {
+            $syncData[$part->id] = [
+                'quantity' => $part->pivot->quantity ?? 1,
+                'notes' => $part->pivot->notes ?? null,
+            ];
+        }
+
+        foreach ($targets as $targetId) {
+            $target = Machine::find($targetId);
+            if ($target) {
+                // Replace target BOM with source BOM
+                $target->parts()->sync($syncData);
+            }
+        }
+
+        session()->flash('info', 'BOM copied to selected machines.');
+
+        if ($request->ajax()) {
+            return response()->json(['status' => 'ok']);
+        }
+
+        return redirect()->route('machines.parts.edit', $machine->id)->with('info', 'BOM copied to selected machines.');
+    }
+
+    /**
+     * Update BOM (parts list) for a machine.
+     */
+    public function updateParts(Request $request, Machine $machine)
+    {
+        $inputParts = $request->input('parts', []);
+        $syncData = [];
+
+        foreach ($inputParts as $partId => $data) {
+            $quantity = isset($data['quantity']) ? (int) $data['quantity'] : 0;
+            if ($quantity > 0) {
+                $syncData[$partId] = ['quantity' => $quantity];
+            }
+        }
+
+        $machine->parts()->sync($syncData);
+
+        return redirect()->route('machines.show', $machine->id)->with('info', 'Bill of Materials updated.');
     }
 
     private function isImportRowEmpty(array $rowData): bool

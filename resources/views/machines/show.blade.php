@@ -10,7 +10,7 @@
 
             <div class="card-body">
                 <div class="text-center mb-4">
-                    <img src="{{ $machine->image_url }}" alt="Machine image" class="img-fluid rounded" style="max-height: 360px; object-fit: cover; width: auto; max-width: 100%;">
+                    <img src="{{ $machine->image_url }}" alt="Machine image" class="img-fluid rounded" style="max-height: 240px; object-fit: cover; width: auto; max-width: 100%;">
                 </div>
 
                 <div class="table-responsive">
@@ -104,6 +104,44 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Bill of Materials</h6>
+                <div>
+                    <a href="{{ route('machines.parts.edit', $machine->id) }}" class="btn btn-sm btn-primary">Edit BOM</a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if($machine->parts->isEmpty())
+                    <p class="mb-0 text-muted">No parts assigned to this machine.</p>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Part Name</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th style="width:120px" class="text-center">Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($machine->parts as $part)
+                                    <tr>
+                                        <td>{{ $part->name }}</td>
+                                        <td>{{ $part->category?->name }}</td>
+                                        <td>{{ $part->unit?->name }}</td>
+                                        <td class="text-center">{{ $part->pivot->quantity ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

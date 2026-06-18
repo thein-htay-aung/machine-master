@@ -37,6 +37,32 @@ class PartController extends Controller
         return view('parts.index', compact('parts', 'categories'));
     }
 
+    /**
+     * Server-side search used by BOM modal (returns partial HTML when AJAX).
+     */
+    public function search(Request $request)
+    {
+        $q = $request->query('q', null);
+
+        $query = Part::with(['category', 'unit'])->orderBy('name');
+
+        if ($q !== null && $q !== '') {
+            $query->where(function ($builder) use ($q) {
+                $builder->where('name', 'like', '%' . $q . '%')
+                        ->orWhere('model', 'like', '%' . $q . '%');
+            });
+        }
+
+        $parts = $query->paginate(8)->withQueryString();
+
+        if ($request->ajax()) {
+            return view('parts._search_results', compact('parts'));
+        }
+
+        $categories = \App\Models\Category::orderBy('name')->get();
+        return view('parts.index', compact('parts', 'categories'));
+    }
+
     public function create()
     {
         $categories = Category::orderBy('name')->get();
@@ -117,7 +143,7 @@ class PartController extends Controller
 
         $part->update($validated);
 
-        return redirect()->route('parts.index')->with('success', 'Part updated successfully.');
+        return redirect()->route('parts.index', $request->query())->with('success', 'Part updated successfully.');
     }
 
     public function destroy(Part $part)

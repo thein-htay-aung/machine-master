@@ -42,8 +42,13 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::resource("machines", MachineController::class);
+    Route::get('/machines/{machine}/parts', [MachineController::class, 'editParts'])->name('machines.parts.edit');
+    Route::post('/machines/{machine}/parts', [MachineController::class, 'updateParts'])->name('machines.parts.update');
+    Route::get('/machines/{machine}/copy-list', [MachineController::class, 'listForCopy'])->name('machines.copy.list');
+    Route::post('/machines/{machine}/copy-to', [MachineController::class, 'copyTo'])->name('machines.copy.to');
     Route::resource("units", UnitController::class);
     Route::resource("categories", CategoryController::class);
+    Route::get('/parts/search', [PartController::class, 'search'])->name('parts.search');
     Route::resource("parts", PartController::class);
     Route::get('/dashboard', [MachineController::class, 'dashboard'])->name('dashboard');
     Route::resource("users", UserController::class);

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="row g-4 mb-4">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <p class="text-muted mb-2">Total Machines</p>
@@ -11,7 +11,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <p class="text-muted mb-2">Fixed Assets</p>
@@ -19,19 +19,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
-                        <p class="text-muted mb-2">Plants</p>
-                        <h2 class="mb-0">{{ $machinesByPlant->count() }}</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-body">
-                        <p class="text-muted mb-2">Statuses</p>
-                        <h2 class="mb-0">{{ $machinesByStatus->count() }}</h2>
+                        <p class="text-muted mb-2">Total Parts Qty</p>
+                        <h2 class="mb-0">{{ $totalPartsQuantity }}</h2>
                     </div>
                 </div>
             </div>
