@@ -67,7 +67,7 @@
                     </form>
                 </div>
 
-                <div class="table-responsive" style="max-height: 550px">
+                <div class="table-responsive" style="max-height: 600px">
                     <table class="table table-hover table-bordered">
                         <thead class="table-success">
                             <tr>

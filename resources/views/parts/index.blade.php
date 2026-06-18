@@ -50,7 +50,7 @@
                     </div>
                 </form>
 
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 600px">
                     <table class="table table-hover table-bordered">
                         <thead class="table-success">
                             <tr>

@@ -16,6 +16,41 @@
             }
         }
 
+        @media (max-width: 767.98px) {
+            #sidebarMenu {
+                position: fixed;
+                top: 56px;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: calc(100vh - 56px);
+                overflow-y: auto;
+                z-index: 1050;
+                background-color: #212529;
+            }
+
+            #sidebarMenu.show + #sidebarBackdrop,
+            #sidebarMenu.collapsing + #sidebarBackdrop {
+                display: block;
+            }
+
+            #sidebarMenu .sidebar-close-btn {
+                display: block;
+            }
+
+            #sidebarBackdrop {
+                position: fixed;
+                inset: 56px 0 0 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1045;
+                display: none;
+            }
+
+            body {
+                padding-bottom: 0;
+            }
+        }
+
         .parts-toggle {
             position: relative;
         }
@@ -62,8 +97,14 @@
     <div class="container-fluid px-0">
         <div class="row g-0">
             @auth
-                <aside id="sidebarMenu" class="collapse d-md-block col-md-2 col-lg-2 bg-dark text-white border-end border-secondary" style="min-width:140px; z-index: 1020;">
+                <aside id="sidebarMenu" class="collapse d-md-block col-md-2 col-lg-2 bg-dark text-white border-end border-secondary" style="min-width:140px; z-index: 1050;">
                     <div class="p-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2 d-md-none">
+                            <span class="text-white fw-semibold">Menu</span>
+                            <button class="btn btn-sm btn-outline-light sidebar-close-btn" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="true" aria-label="Close sidebar">
+                                &times;
+                            </button>
+                        </div>
                         {{-- <h6 class="text-uppercase text-white-50 mb-3">Menu</h6> --}}
                         <ul class="nav nav-pills flex-column">
                             <li class="nav-item mb-1">
@@ -101,6 +142,7 @@
                         </ul>
                     </div>
                 </aside>
+                <div id="sidebarBackdrop" class="d-md-none" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-label="Close sidebar"></div>
                 <main class="col-12 col-md-10 col-lg-10 py-2">
                     @yield('content')
                 </main>
