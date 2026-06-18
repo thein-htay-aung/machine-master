@@ -8,16 +8,20 @@
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th>Part</th>
+                    <th>Part Name</th>
+                    <th>Model</th>
+                    <th>Brand</th>
                     <th>Category</th>
                     <th>Unit</th>
-                    <th style="width:160px">Quantity &amp; Add</th>
+                    <th style="width:120px">Quantity</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($parts as $part)
                     <tr>
                         <td>{{ $part->name }}</td>
+                        <td>{{ $part->model }}</td>
+                        <td>{{ $part->brand }}</td>
                         <td>{{ $part->category?->name }}</td>
                         <td>{{ $part->unit?->name }}</td>
                         <td>

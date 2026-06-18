@@ -124,6 +124,8 @@
                             <thead>
                                 <tr>
                                     <th>Part Name</th>
+                                    <th>Model</th>
+                                    <th>Brand</th>
                                     <th>Category</th>
                                     <th>Unit</th>
                                     <th style="width:120px" class="text-center">Quantity</th>
@@ -133,6 +135,8 @@
                                 @foreach($machine->parts as $part)
                                     <tr>
                                         <td>{{ $part->name }}</td>
+                                        <td>{{ $part->model }}</td>
+                                        <td>{{ $part->brand }}</td>
                                         <td>{{ $part->category?->name }}</td>
                                         <td>{{ $part->unit?->name }}</td>
                                         <td class="text-center">{{ $part->pivot->quantity ?? '-' }}</td>
