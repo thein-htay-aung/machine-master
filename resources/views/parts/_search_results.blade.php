@@ -27,7 +27,7 @@
                         <td>
                             <div class="d-flex gap-2">
                                 <input id="part-qty-{{ $part->id }}" type="number" min="1" value="1" class="form-control form-control-sm text-center">
-                                <button data-id="{{ $part->id }}" data-name="{{ $part->name }}" data-category="{{ $part->category?->name }}" data-unit="{{ $part->unit?->name }}" class="btn btn-sm btn-outline-primary add-part-btn">Add</button>
+                                <button data-id="{{ $part->id }}" data-name="{{ $part->name }}" data-model="{{ $part->model }}" data-brand="{{ $part->brand }}" data-category="{{ $part->category?->name }}" data-unit="{{ $part->unit?->name }}" class="btn btn-sm btn-outline-primary add-part-btn">Add</button>
                             </div>
                         </td>
                     </tr>

@@ -149,17 +149,19 @@
                     btn.addEventListener('click', function () {
                         const partId = this.dataset.id;
                         const name = this.dataset.name;
+                        const model = this.dataset.model;
+                        const brand = this.dataset.brand;
                         const category = this.dataset.category;
                         const unit = this.dataset.unit;
                         const qtyInput = document.getElementById('part-qty-' + partId);
                         let qty = parseInt(qtyInput?.value || '1', 10);
                         if (isNaN(qty) || qty <= 0) qty = 1;
-                        addOrUpdateBOMRow(partId, name, category, unit, qty);
+                        addOrUpdateBOMRow(partId, name, model, brand, category, unit, qty);
                     });
                 });
             }
 
-            function addOrUpdateBOMRow(partId, name, category, unit, qty) {
+            function addOrUpdateBOMRow(partId, name, model, brand, category, unit, qty) {
                 const tbody = document.getElementById('bom-body');
                 function escapeHtml(unsafe) {
                     return String(unsafe)
@@ -180,6 +182,8 @@
                     tr.setAttribute('data-part-id', partId);
                     tr.innerHTML = `
                         <td>${escapeHtml(name)}</td>
+                        <td>${escapeHtml(model)}</td>
+                        <td>${escapeHtml(brand)}</td>
                         <td>${escapeHtml(category || '')}</td>
                         <td>${escapeHtml(unit || '')}</td>
                         <td><input type="number" min="0" name="parts[${partId}][quantity]" value="${qty}" class="form-control form-control-sm text-center"></td>
