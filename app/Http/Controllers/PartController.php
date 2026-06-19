@@ -146,7 +146,7 @@ class PartController extends Controller
         return redirect()->route('parts.index', $request->query())->with('success', 'Part updated successfully.');
     }
 
-    public function destroy(Part $part)
+    public function destroy(Request $request, Part $part)
     {
         if ($part->image && Storage::disk('public')->exists($part->image)) {
             Storage::disk('public')->delete($part->image);
@@ -154,6 +154,6 @@ class PartController extends Controller
 
         $part->delete();
 
-        return redirect()->route('parts.index')->with('success', 'Part deleted successfully.');
+        return redirect()->route('parts.index', $request->query())->with('success', 'Part deleted successfully.');
     }
 }

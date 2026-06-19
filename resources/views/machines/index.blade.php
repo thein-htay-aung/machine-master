@@ -113,9 +113,9 @@
                                     <td class="align-middle">{{ $machine->location }}</td>
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-1">
-                                            <a href="{{ route('machines.show', $machine->id) }}" class="btn btn-sm btn-warning">Detail</a>
-                                            <a href="{{ route('machines.edit', $machine->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-info">Edit</a>
-                                            <form action="{{ route('machines.destroy', $machine->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this machine?');">
+                                            <a href="{{ route('machines.show', ['machine' => $machine->id] + request()->query()) }}" class="btn btn-sm btn-warning">Detail</a>
+                                            <a href="{{ route('machines.edit', ['machine' => $machine->id] + request()->query()) }}" class="btn btn-sm btn-info">Edit</a>
+                                            <form action="{{ route('machines.destroy', ['machine' => $machine->id] + request()->query()) }}" method="POST" onsubmit="return confirm('Delete this machine?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>

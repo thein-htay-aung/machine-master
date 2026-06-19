@@ -5,12 +5,12 @@
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Part Detail</h5>
-                <a href="{{ route('parts.index') }}" class="btn btn-sm btn-light">Back to List</a>
+                <a href="{{ route('parts.index', request()->query()) }}" class="btn btn-sm btn-light">Back to List</a>
             </div>
 
             <div class="card-body">
                 <div class="text-center mb-4">
-                    <img src="{{ $part->image_url }}" alt="Part image" class="img-fluid rounded" style="max-height: 360px; object-fit: cover; width: auto; max-width: 100%;">
+                    <img src="{{ $part->image_url }}" alt="Part image" class="img-fluid rounded" style="max-height: 240px; object-fit: cover; width: auto; max-width: 100%;">
                 </div>
 
                 <div class="table-responsive">

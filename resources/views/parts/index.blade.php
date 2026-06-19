@@ -86,9 +86,9 @@
                                     </td>
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                            <a href="{{ route('parts.show', $part->id) }}" class="btn btn-sm btn-warning">Detail</a>
-                                            <a href="{{ route('parts.edit', $part->id) }}" class="btn btn-sm btn-info">Edit</a>
-                                            <form action="{{ route('parts.destroy', $part->id) }}" method="POST" onsubmit="return confirm('Delete this part?');" class="m-0">
+                                            <a href="{{ route('parts.show', ['part' => $part->id] + request()->query()) }}" class="btn btn-sm btn-warning">Detail</a>
+                                            <a href="{{ route('parts.edit', $part->id) }} {{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-info">Edit</a>
+                                            <form action="{{ route('parts.destroy', $part->id) }} {{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this part?');" class="m-0">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>

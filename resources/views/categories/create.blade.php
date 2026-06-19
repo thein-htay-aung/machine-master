@@ -5,7 +5,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Add New Category</h5>
-                <a href="{{ route('categories.index') }}" class="btn btn-sm btn-light">Back to List</a>
+                <a href="{{ route('categories.index', request()->query())) }}" class="btn btn-sm btn-light">Back to List</a>
             </div>
 
             <div class="card-body">
@@ -32,7 +32,7 @@
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">Save Category</button>
-                        <a href="{{ route('categories.index') }}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ route('categories.index', request()->query()) }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>

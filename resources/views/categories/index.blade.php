@@ -43,8 +43,8 @@
                                     <td class="align-middle">{{ $category->updated_at?->format('Y-m-d H:i:s') ?? '-' }}</td>
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                            <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-sm btn-info">Edit</a>
-                                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Delete this category?');" class="m-0">
+                                            <a href="{{ route('categories.edit', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-info">Edit</a>
+                                            <form action="{{ route('categories.destroy', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this category?');" class="m-0">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
