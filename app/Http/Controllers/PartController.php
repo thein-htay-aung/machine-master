@@ -74,7 +74,7 @@ class PartController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:parts,name',
+            'name' => 'required|string|max:255',
             'model' => 'nullable|string|max:255',
             'brand' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
@@ -118,7 +118,7 @@ class PartController extends Controller
     public function update(Request $request, Part $part)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:parts,name,' . $part->id,
+            'name' => 'required|string|max:255',
             'model' => 'nullable|string|max:255',
             'brand' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
