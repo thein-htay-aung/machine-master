@@ -8,7 +8,10 @@
 
             <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Parts</h5>
-                <a href="{{ route('parts.create') }}" class="btn btn-sm btn-light">+ Add New Part</a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('parts.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
+                    <a href="{{ route('parts.create') }}" class="btn btn-sm btn-light">+ Add New Part</a>
+                </div>
             </div>
 
             <div class="card-body">
@@ -32,13 +35,21 @@
                         </select>
                     </div>
                     <div class="col-md-2">
+                        <select name="plant_id" class="form-select">
+                            <option value="">All plants</option>
+                            @foreach($plants as $plant)
+                                <option value="{{ $plant->id }}" {{ request('plant_id') == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
                         <select name="is_active" class="form-select">
                             <option value="">All</option>
                             <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
                             <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <div class="row gx-2">
                             <div class="col-6">
                                 <button type="submit" class="btn btn-primary w-100">Filter</button>
@@ -60,7 +71,9 @@
                                 <th scope="col">Model</th>
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
-                                <th scope="col">Unit</th>
+                                <th scope="col" class="text-center">Plant</th>
+                                <th scope="col" class="text-center">Unit</th>
+                                <th scope="col" class="text-center">Min Qty</th>
                                 <th scope="col" class="text-center">Active</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
@@ -78,7 +91,9 @@
                                     <td class="align-middle">{{ $part->model ?? '-' }}</td>
                                     <td class="align-middle">{{ $part->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $part->category?->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $part->unit?->name ?? '-' }}</td>
+                                    <td class="align-middle text-center">{{ $part->plant?->name ?? '-' }}</td>
+                                    <td class="align-middle text-center">{{ $part->unit?->name ?? '-' }}</td>
+                                    <td class="align-middle text-center">{{ $part->min_qty ?? '-' }}</td>
                                     <td class="text-center align-middle">
                                         <span class="badge {{ $part->is_active ? 'bg-success' : 'bg-danger' }}">
                                             {{ $part->is_active ? 'Yes' : 'No' }}
@@ -98,7 +113,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">No parts found.</td>
+                                    <td colspan="11" class="text-center">No parts found.</td>
                                 </tr>
                             @endforelse
 

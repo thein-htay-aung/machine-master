@@ -8,6 +8,12 @@ use App\Models\Category;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Machine;
+use App\Models\Plant;
+use App\Models\Purchase;
+use App\Models\Issue;
+use App\Models\StockAdjustment;
+use App\Models\CurrentStock;
+use App\Models\DailyStock;
 
 class Part extends Model
 {
@@ -18,6 +24,7 @@ class Part extends Model
         'model',
         'brand',
         'location',
+        'plant_id',
         'category_id',
         'is_active',
         'unit_id',
@@ -52,9 +59,39 @@ class Part extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
+    }
+
     public function machines()
     {
         return $this->belongsToMany(Machine::class, 'machine_part')->withPivot('quantity', 'notes')->withTimestamps();
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function issues()
+    {
+        return $this->hasMany(Issue::class);
+    }
+
+    public function stockAdjustments()
+    {
+        return $this->hasMany(StockAdjustment::class);
+    }
+
+    public function currentStock()
+    {
+        return $this->hasOne(CurrentStock::class, 'item_id');
+    }
+
+    public function dailyStocks()
+    {
+        return $this->hasMany(DailyStock::class, 'item_id');
     }
 
     public function createdBy()

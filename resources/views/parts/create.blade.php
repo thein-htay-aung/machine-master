@@ -56,6 +56,19 @@
                         </div>
 
                         <div class="col-md-6">
+                            <label class="form-label">Plant</label>
+                            <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror">
+                                <option value="">Select Plant</option>
+                                @foreach ($plants as $plant)
+                                    <option value="{{ $plant->id }}" {{ old('plant_id', 1) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('plant_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label">Category</label>
                             <select name="category_id" class="form-select @error('category_id') is-invalid @enderror">
                                 <option value="">Select category</option>

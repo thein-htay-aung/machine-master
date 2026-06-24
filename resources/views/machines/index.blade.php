@@ -10,6 +10,7 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                     <h5 class="mb-0">Machine List</h5>
                     <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('machines.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
                         @if(auth()->user()->isSuperAdmin())
                             <a href="{{ route('machines.import') }}" class="btn btn-sm btn-light">Import Excel</a>
                         @endif

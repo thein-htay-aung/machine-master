@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Imports\MachineImport;
+use App\Exports\MachinesExport;
 use App\Models\Machine;
 use App\Models\Plant;
 use App\Models\Status;
 use App\Models\Part;
+use App\Models\CurrentStock;
+use App\Models\Issue;
+use App\Models\Purchase;
+use App\Models\StockAdjustment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -49,6 +53,11 @@ class MachineController extends Controller
         $statuses = Status::orderBy('name')->get();
 
         return view('machines.index', compact('machines', 'plants', 'statuses'));
+    }
+
+    public function export(Request $request)
+    {
+        return Excel::download(new MachinesExport($request->query()), 'machines.xlsx');
     }
 
     /**
@@ -144,6 +153,7 @@ class MachineController extends Controller
             'currency' => 'nullable|string|in:MMK,USD,SGD,JPY,CNY',
             'unit_price' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'remove_image' => 'sometimes|boolean',
             'is_fixed_asset' => 'sometimes|boolean',
             'remark' => 'nullable|string',
             'plant_id' => 'required|exists:plants,id',
@@ -155,9 +165,15 @@ class MachineController extends Controller
                 Storage::disk('public')->delete($machine->image);
             }
             $validated['image'] = $request->file('image')->store('machines', 'public');
+        } elseif ($request->boolean('remove_image')) {
+            if ($machine->image && Storage::disk('public')->exists($machine->image)) {
+                Storage::disk('public')->delete($machine->image);
+            }
+            $validated['image'] = null;
         } else {
             unset($validated['image']);
         }
+        unset($validated['remove_image']);
 
         $validated['is_fixed_asset'] = $request->boolean('is_fixed_asset');
         $validated['updated_by'] = $request->user()->id;
@@ -180,6 +196,19 @@ class MachineController extends Controller
     public function dashboard()
     {
         $totalMachines = Machine::count();
+        $totalParts = Part::count();
+        $currentStockQty = CurrentStock::sum('qty');
+        $lowStockCount = CurrentStock::join('parts', 'current_stocks.item_id', '=', 'parts.id')
+            ->whereNotNull('parts.min_qty')
+            ->whereColumn('current_stocks.qty', '<=', 'parts.min_qty')
+            ->count();
+
+        $today = now()->toDateString();
+        $todayPurchaseQty = Purchase::whereDate('purchased_date', $today)->sum('qty');
+        $todayIssueQty = Issue::whereDate('issued_date', $today)->sum('qty');
+        $todayAdjustmentInQty = StockAdjustment::whereDate('adjusted_date', $today)->where('symbol', '+')->sum('qty');
+        $todayAdjustmentOutQty = StockAdjustment::whereDate('adjusted_date', $today)->where('symbol', '-')->sum('qty');
+
         $machinesByStatus = Machine::with('status')->get()->groupBy('status.name')->map(function ($group) {
             return $group->count();
         });
@@ -187,10 +216,37 @@ class MachineController extends Controller
             return $group->count();
         });
         $fixedAssetsCount = Machine::where('is_fixed_asset', true)->count();
-        $totalPartsQuantity = DB::table('machine_part')->sum('quantity');
         $recentMachines = Machine::with(['plant', 'status'])->orderBy('created_at', 'desc')->limit(5)->get();
+        $lowStocks = CurrentStock::with(['item.category', 'item.unit'])
+            ->join('parts', 'current_stocks.item_id', '=', 'parts.id')
+            ->whereNotNull('parts.min_qty')
+            ->whereColumn('current_stocks.qty', '<=', 'parts.min_qty')
+            ->orderBy('current_stocks.qty')
+            ->select('current_stocks.*')
+            ->limit(8)
+            ->get();
+        $recentPurchases = Purchase::with('part')->latest('created_at')->limit(5)->get();
+        $recentIssues = Issue::with('part')->latest('created_at')->limit(5)->get();
+        $recentAdjustments = StockAdjustment::with('part')->latest('created_at')->limit(5)->get();
 
-        return view('dashboard', compact('totalMachines', 'machinesByStatus', 'machinesByPlant', 'fixedAssetsCount', 'totalPartsQuantity', 'recentMachines'));
+        return view('dashboard', compact(
+            'totalMachines',
+            'totalParts',
+            'currentStockQty',
+            'lowStockCount',
+            'todayPurchaseQty',
+            'todayIssueQty',
+            'todayAdjustmentInQty',
+            'todayAdjustmentOutQty',
+            'machinesByStatus',
+            'machinesByPlant',
+            'fixedAssetsCount',
+            'recentMachines',
+            'lowStocks',
+            'recentPurchases',
+            'recentIssues',
+            'recentAdjustments'
+        ));
     }
 
     public function importForm()

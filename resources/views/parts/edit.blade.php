@@ -57,6 +57,19 @@
                         </div>
 
                         <div class="col-md-6">
+                            <label class="form-label">Plant</label>
+                            <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror">
+                                <option value="">Select Plant</option>
+                                @foreach ($plants as $plant)
+                                    <option value="{{ $plant->id }}" {{ old('plant_id', $part->plant_id) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('plant_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label">Category</label>
                             <select name="category_id" class="form-select @error('category_id') is-invalid @enderror">
                                 <option value="">Select category</option>
@@ -110,6 +123,10 @@
                                 <label class="form-label">Current Image</label>
                                 <div>
                                     <img src="{{ $part->image_url }}" alt="Part image" class="img-fluid rounded" style="max-height: 220px; object-fit: cover;">
+                                </div>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image" value="1" {{ old('remove_image') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="remove_image">Remove current image</label>
                                 </div>
                             </div>
                         @endif

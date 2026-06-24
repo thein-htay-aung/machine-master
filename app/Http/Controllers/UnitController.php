@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\UnitsExport;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UnitController extends Controller
 {
@@ -18,6 +20,11 @@ class UnitController extends Controller
             ->withQueryString();
 
         return view('units.index', compact('units'));
+    }
+
+    public function export()
+    {
+        return Excel::download(new UnitsExport(), 'units.xlsx');
     }
 
     /**

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <style>
         @media (min-width: 768px) {
             #sidebarMenu {
@@ -115,7 +116,13 @@
                             </li>
                             <li class="nav-item mb-1">
                                 @php
-                                    $partsOpen = request()->routeIs('units.*') || request()->routeIs('categories.*') || request()->routeIs('parts.*');
+                                    $partsOpen = request()->routeIs('units.*')
+                                        || request()->routeIs('categories.*')
+                                        || request()->routeIs('parts.*')
+                                        || request()->routeIs('purchases.*')
+                                        || request()->routeIs('issues.*')
+                                        || request()->routeIs('stock-adjustments.*')
+                                        || request()->routeIs('stocks.*');
                                 @endphp
                                 <a class="nav-link text-white-50 parts-toggle {{ $partsOpen ? '' : 'collapsed' }} d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#partsSubmenu" role="button" aria-expanded="{{ $partsOpen ? 'true' : 'false' }}" aria-controls="partsSubmenu">
                                     <span>Parts</span>
@@ -130,6 +137,18 @@
                                         </li>
                                         <li class="nav-item mb-1">
                                             <a class="nav-link {{ request()->routeIs('parts.*') ? 'active' : 'text-white-50' }}" href="{{ route('parts.index') }}">Part Master</a>
+                                        </li>
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('purchases.*') ? 'active' : 'text-white-50' }}" href="{{ route('purchases.index') }}">Purchase</a>
+                                        </li>
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('issues.*') ? 'active' : 'text-white-50' }}" href="{{ route('issues.index') }}">Issue</a>
+                                        </li>
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('stock-adjustments.*') ? 'active' : 'text-white-50' }}" href="{{ route('stock-adjustments.index') }}">Stock Adjustment</a>
+                                        </li>
+                                        <li class="nav-item mb-1">
+                                            <a class="nav-link {{ request()->routeIs('stocks.*') ? 'active' : 'text-white-50' }}" href="{{ route('stocks.index') }}">Stock</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -154,7 +173,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

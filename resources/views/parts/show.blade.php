@@ -33,6 +33,10 @@
                                 <td>{{ $part->location ?? '-' }}</td>
                             </tr>
                             <tr>
+                                <th>Plant</th>
+                                <td>{{ $part->plant?->name ?? '-' }}</td>
+                            </tr>
+                            <tr>
                                 <th>Category</th>
                                 <td>{{ $part->category?->name ?? '-' }}</td>
                             </tr>

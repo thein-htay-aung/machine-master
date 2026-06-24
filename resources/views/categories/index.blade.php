@@ -8,7 +8,10 @@
 
             <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Categories</h5>
-                <a href="{{ route('categories.create') }}" class="btn btn-sm btn-light">+ Add New Category</a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('categories.export') }}" class="btn btn-sm btn-light">Download Excel</a>
+                    <a href="{{ route('categories.create') }}" class="btn btn-sm btn-light">+ Add New Category</a>
+                </div>
             </div>
 
             <div class="card-body">

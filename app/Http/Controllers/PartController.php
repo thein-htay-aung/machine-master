@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PartsExport;
+use App\Models\CurrentStock;
 use App\Models\Part;
 use App\Models\Category;
+use App\Models\Plant;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PartController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Part::with(['category', 'unit'])->orderBy('name');
+        $query = Part::with(['category', 'plant', 'unit'])->orderBy('name');
 
         $name = $request->query('name', null);
+        $plantId = $request->query('plant_id', null);
         $categoryId = $request->query('category_id', null);
         $isActive = $request->query('is_active', null);
 
@@ -26,6 +32,10 @@ class PartController extends Controller
             $query->where('category_id', $categoryId);
         }
 
+        if ($plantId !== null && $plantId !== '') {
+            $query->where('plant_id', $plantId);
+        }
+
         if ($isActive !== null && $isActive !== '') {
             $query->where('is_active', (int) $isActive);
         }
@@ -33,8 +43,14 @@ class PartController extends Controller
         $parts = $query->paginate(10)->withQueryString();
 
         $categories = Category::orderBy('name')->get();
+        $plants = Plant::orderBy('name')->get();
 
-        return view('parts.index', compact('parts', 'categories'));
+        return view('parts.index', compact('parts', 'categories', 'plants'));
+    }
+
+    public function export(Request $request)
+    {
+        return Excel::download(new PartsExport($request->query()), 'parts.xlsx');
     }
 
     /**
@@ -44,7 +60,7 @@ class PartController extends Controller
     {
         $q = $request->query('q', null);
 
-        $query = Part::with(['category', 'unit'])->orderBy('name');
+        $query = Part::with(['category', 'plant', 'unit'])->orderBy('name');
 
         if ($q !== null && $q !== '') {
             $query->where(function ($builder) use ($q) {
@@ -59,16 +75,18 @@ class PartController extends Controller
             return view('parts._search_results', compact('parts'));
         }
 
-        $categories = \App\Models\Category::orderBy('name')->get();
-        return view('parts.index', compact('parts', 'categories'));
+        $categories = Category::orderBy('name')->get();
+        $plants = Plant::orderBy('name')->get();
+        return view('parts.index', compact('parts', 'categories', 'plants'));
     }
 
     public function create()
     {
         $categories = Category::orderBy('name')->get();
+        $plants = Plant::orderBy('name')->get();
         $units = Unit::orderBy('name')->get();
 
-        return view('parts.create', compact('categories', 'units'));
+        return view('parts.create', compact('categories', 'plants', 'units'));
     }
 
     public function store(Request $request)
@@ -78,6 +96,7 @@ class PartController extends Controller
             'model' => 'nullable|string|max:255',
             'brand' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
+            'plant_id' => 'required|exists:plants,id',
             'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'sometimes|boolean',
             'unit_id' => 'nullable|exists:units,id',
@@ -95,14 +114,21 @@ class PartController extends Controller
         $validated['created_by'] = $request->user()->id;
         $validated['updated_by'] = $request->user()->id;
 
-        Part::create($validated);
+        DB::transaction(function () use ($validated) {
+            $part = Part::create($validated);
+
+            CurrentStock::create([
+                'item_id' => $part->id,
+                'qty' => 0,
+            ]);
+        });
 
         return redirect()->route('parts.index')->with('success', 'Part created successfully.');
     }
 
     public function show(Part $part)
     {
-        $part->load(['category', 'unit', 'createdBy', 'updatedBy']);
+        $part->load(['category', 'plant', 'unit', 'createdBy', 'updatedBy']);
 
         return view('parts.show', compact('part'));
     }
@@ -110,9 +136,10 @@ class PartController extends Controller
     public function edit(Part $part)
     {
         $categories = Category::orderBy('name')->get();
+        $plants = Plant::orderBy('name')->get();
         $units = Unit::orderBy('name')->get();
 
-        return view('parts.edit', compact('part', 'categories', 'units'));
+        return view('parts.edit', compact('part', 'categories', 'plants', 'units'));
     }
 
     public function update(Request $request, Part $part)
@@ -122,11 +149,13 @@ class PartController extends Controller
             'model' => 'nullable|string|max:255',
             'brand' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
+            'plant_id' => 'required|exists:plants,id',
             'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'sometimes|boolean',
             'unit_id' => 'nullable|exists:units,id',
             'min_qty' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'remove_image' => 'sometimes|boolean',
         ]);
 
         if ($request->hasFile('image')) {
@@ -134,9 +163,15 @@ class PartController extends Controller
                 Storage::disk('public')->delete($part->image);
             }
             $validated['image'] = $request->file('image')->store('parts', 'public');
+        } elseif ($request->boolean('remove_image')) {
+            if ($part->image && Storage::disk('public')->exists($part->image)) {
+                Storage::disk('public')->delete($part->image);
+            }
+            $validated['image'] = null;
         } else {
             unset($validated['image']);
         }
+        unset($validated['remove_image']);
 
         $validated['is_active'] = $request->boolean('is_active');
         $validated['updated_by'] = $request->user()->id;

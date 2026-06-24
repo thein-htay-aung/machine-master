@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CategoriesExport;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
@@ -15,6 +17,11 @@ class CategoryController extends Controller
             ->withQueryString();
 
         return view('categories.index', compact('categories'));
+    }
+
+    public function export()
+    {
+        return Excel::download(new CategoriesExport(), 'categories.xlsx');
     }
 
     public function create()

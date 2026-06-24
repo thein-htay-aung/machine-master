@@ -6,6 +6,10 @@ use App\Http\Controllers\MachineController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PartController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\IssueController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -41,15 +45,27 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/machines/export', [MachineController::class, 'export'])->name('machines.export');
     Route::resource("machines", MachineController::class);
     Route::get('/machines/{machine}/parts', [MachineController::class, 'editParts'])->name('machines.parts.edit');
     Route::post('/machines/{machine}/parts', [MachineController::class, 'updateParts'])->name('machines.parts.update');
     Route::get('/machines/{machine}/copy-list', [MachineController::class, 'listForCopy'])->name('machines.copy.list');
     Route::post('/machines/{machine}/copy-to', [MachineController::class, 'copyTo'])->name('machines.copy.to');
+    Route::get('/units/export', [UnitController::class, 'export'])->name('units.export');
     Route::resource("units", UnitController::class);
+    Route::get('/categories/export', [CategoryController::class, 'export'])->name('categories.export');
     Route::resource("categories", CategoryController::class);
     Route::get('/parts/search', [PartController::class, 'search'])->name('parts.search');
+    Route::get('/parts/export', [PartController::class, 'export'])->name('parts.export');
     Route::resource("parts", PartController::class);
+    Route::get('/purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
+    Route::resource('purchases', PurchaseController::class)->only(['index', 'create', 'store']);
+    Route::get('/issues/export', [IssueController::class, 'export'])->name('issues.export');
+    Route::resource('issues', IssueController::class)->only(['index', 'create', 'store']);
+    Route::get('/stock-adjustments/export', [StockAdjustmentController::class, 'export'])->name('stock-adjustments.export');
+    Route::resource('stock-adjustments', StockAdjustmentController::class)->only(['index', 'create', 'store']);
+    Route::get('/stocks', [StockController::class, 'index'])->name('stocks.index');
+    Route::get('/stocks/daily/export', [StockController::class, 'dailyExport'])->name('stocks.daily.export');
     Route::get('/dashboard', [MachineController::class, 'dashboard'])->name('dashboard');
     Route::resource("users", UserController::class);
     Route::get('/account/password', [UserController::class, 'editPassword'])->name('account.password.edit');

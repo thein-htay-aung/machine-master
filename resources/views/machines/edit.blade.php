@@ -180,6 +180,10 @@
                                 <div>
                                     <img src="{{ $machine->image_url }}" alt="Machine image" class="img-fluid rounded" style="max-height: 220px; object-fit: cover;">
                                 </div>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image" value="1" {{ old('remove_image') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="remove_image">Remove current image</label>
+                                </div>
                             </div>
                         @endif
 
