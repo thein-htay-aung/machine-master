@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -38,8 +39,8 @@ class UserController extends Controller
     {
         $roles = Role::where('name', '!=', 'superadmin')->orderBy('name')->get();
         $departments = Department::where('name', '!=', 'System')->orderBy('name')->get();
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId();
+        $plants = $this->userSelectablePlants();
+        $defaultPlantId = $this->defaultUserPlantId();
 
         return view('users.create', compact('roles', 'departments', 'plants', 'defaultPlantId'));
     }
@@ -54,7 +55,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
-            'plant_id' => ['required', $this->plantValidationRule()],
+            'plant_id' => ['required', $this->userPlantValidationRule()],
         ]);
 
         $password = Str::random(8);
@@ -104,8 +105,8 @@ class UserController extends Controller
     {
         $roles = Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId($user->plant_id);
+        $plants = $this->userSelectablePlants();
+        $defaultPlantId = $this->defaultUserPlantId($user->plant_id);
 
         return view('users.edit', compact('user', 'roles', 'departments', 'plants', 'defaultPlantId'));
     }
@@ -120,7 +121,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
-            'plant_id' => ['required', $this->plantValidationRule()],
+            'plant_id' => ['required', $this->userPlantValidationRule()],
             'status' => 'required|boolean',
         ]);
 
@@ -201,6 +202,29 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted.');
+    }
+
+    private function userSelectablePlants()
+    {
+        return \App\Models\Plant::whereIn('name', ['All', 'WTY', 'SLB'])
+            ->orderByRaw("CASE WHEN name = 'All' THEN 0 ELSE 1 END")
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function userSelectablePlantIds(): array
+    {
+        return $this->userSelectablePlants()->pluck('id')->all();
+    }
+
+    private function userPlantValidationRule()
+    {
+        return Rule::exists('plants', 'id')->where(fn ($query) => $query->whereIn('id', $this->userSelectablePlantIds()));
+    }
+
+    private function defaultUserPlantId(?int $currentPlantId = null): ?int
+    {
+        return $currentPlantId;
     }
 
 }
