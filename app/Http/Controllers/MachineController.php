@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Imports\MachineImport;
 use App\Exports\MachinesExport;
 use App\Models\Machine;
@@ -19,6 +20,8 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class MachineController extends Controller
 {
+    use ResolvesPlantOptions;
+
     private const IMPORT_CURRENCIES = ['MMK', 'USD', 'SGD', 'JPY', 'CNY'];
     private const MACHINE_CATEGORIES = ['Production', 'Facility', 'Measurement', 'General'];
     /**
@@ -45,16 +48,22 @@ class MachineController extends Controller
             $query->where('status_id', $status_id);
         }
 
-        if ($plant_id) {
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
+
+        $selectablePlantIds = $plants->pluck('id')->all();
+
+        if ($plant_id && in_array((int) $plant_id, $selectablePlantIds, true)) {
             $query->where('plant_id', $plant_id);
+        } elseif ($defaultPlantId) {
+            $query->where('plant_id', $defaultPlantId);
         }
 
         $machines = $query->orderBy('control_no')->paginate(10)->withQueryString();
 
-        $plants = Plant::orderBy('name')->get();
         $statuses = Status::orderBy('name')->get();
 
-        return view('machines.index', compact('machines', 'plants', 'statuses'));
+        return view('machines.index', compact('machines', 'plants', 'statuses', 'defaultPlantId'));
     }
 
     public function export(Request $request)
@@ -67,11 +76,12 @@ class MachineController extends Controller
      */
     public function create()
     {
-        $plants = Plant::orderBy('name')->get();
+        $plants = $this->selectablePlants();
         $statuses = Status::orderBy('name')->get();
         $categories = self::MACHINE_CATEGORIES;
+        $defaultPlantId = $this->defaultPlantId();
 
-        return view('machines.create', compact('plants', 'statuses', 'categories'));
+        return view('machines.create', compact('plants', 'statuses', 'categories', 'defaultPlantId'));
     }
 
     /**
@@ -96,7 +106,7 @@ class MachineController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'is_fixed_asset' => 'sometimes|boolean',
             'remark' => 'nullable|string',
-            'plant_id' => 'required|exists:plants,id',
+            'plant_id' => ['required', $this->plantValidationRule()],
             'status_id' => 'required|exists:statuses,id',
             'category' => ['required', 'string', Rule::in(self::MACHINE_CATEGORIES)],
         ]);
@@ -131,11 +141,12 @@ class MachineController extends Controller
      */
     public function edit(Machine $machine)
     {
-        $plants = Plant::orderBy('name')->get();
+        $plants = $this->selectablePlants();
         $statuses = Status::orderBy('name')->get();
         $categories = self::MACHINE_CATEGORIES;
+        $defaultPlantId = $this->defaultPlantId($machine->plant_id);
 
-        return view('machines.edit', compact('machine', 'plants', 'statuses', 'categories'));
+        return view('machines.edit', compact('machine', 'plants', 'statuses', 'categories', 'defaultPlantId'));
     }
 
     /**
@@ -161,7 +172,7 @@ class MachineController extends Controller
             'remove_image' => 'sometimes|boolean',
             'is_fixed_asset' => 'sometimes|boolean',
             'remark' => 'nullable|string',
-            'plant_id' => 'required|exists:plants,id',
+            'plant_id' => ['required', $this->plantValidationRule()],
             'status_id' => 'required|exists:statuses,id',
             'category' => ['required', 'string', Rule::in(self::MACHINE_CATEGORIES)],
         ]);
@@ -564,4 +575,5 @@ class MachineController extends Controller
             return null;
         }
     }
+
 }

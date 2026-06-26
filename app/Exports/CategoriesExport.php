@@ -11,18 +11,19 @@ class CategoriesExport implements FromCollection, WithHeadings, WithMapping
 {
     public function collection()
     {
-        return Category::with(['createdBy', 'updatedBy'])->orderBy('name')->get();
+        return Category::with(['plant', 'createdBy', 'updatedBy'])->orderBy('name')->get();
     }
 
     public function headings(): array
     {
-        return ['Name', 'Created By', 'Created At', 'Updated By', 'Updated At'];
+        return ['Name', 'Plant', 'Created By', 'Created At', 'Updated By', 'Updated At'];
     }
 
     public function map($category): array
     {
         return [
             $category->name,
+            $category->plant?->name,
             $category->createdBy?->name ?? 'System',
             $category->created_at?->format('Y-m-d H:i:s'),
             $category->updatedBy?->name ?? 'System',

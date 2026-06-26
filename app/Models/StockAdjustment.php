@@ -11,8 +11,11 @@ class StockAdjustment extends Model
     protected $fillable = [
         'adjustment_no',
         'part_id',
+        'plant_id',
         'symbol',
         'qty',
+        'price',
+        'amount',
         'reason',
         'adjusted_date',
         'adjusted_by',
@@ -20,12 +23,19 @@ class StockAdjustment extends Model
     ];
 
     protected $casts = [
+        'price' => 'decimal:2',
+        'amount' => 'decimal:2',
         'adjusted_date' => 'date',
     ];
 
     public function part()
     {
         return $this->belongsTo(Part::class);
+    }
+
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
     }
 
     public function createdBy()

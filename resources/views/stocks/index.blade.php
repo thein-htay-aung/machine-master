@@ -34,6 +34,24 @@
                         <input type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Part name or model">
                     </div>
                     <div class="col-md-4">
+                        <select name="category_id" class="form-select">
+                            <option value="">All categories</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="plant_id" class="form-select">
+                            @if($plants->count() > 1)
+                                <option value="">All plants</option>
+                            @endif
+                            @foreach($plants as $plant)
+                                <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
                         <div class="row gx-2">
                             <div class="col-6">
                                 <button type="submit" class="btn btn-primary w-100">Filter</button>

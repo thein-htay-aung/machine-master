@@ -19,32 +19,41 @@
                     </div>
                 @endif
 
-                <form method="GET" action="{{ route('issues.index') }}" class="row gx-3 gy-3 align-items-end mb-3">
-                    <div class="col-md-3">
+                <form method="GET" action="{{ route('issues.index') }}" class="row gx-2 gy-2 align-items-end mb-3">
+                    <div class="col-md-6 col-xl-2">
                         <input type="text" name="issue_no" value="{{ request('issue_no') }}" class="form-control" placeholder="Search issue no">
                     </div>
-                    <div class="col-md-3">
-                        <select name="part_id" class="form-select">
-                            <option value="">All parts</option>
-                            @foreach($parts as $part)
-                                <option value="{{ $part->id }}" {{ request('part_id') == $part->id ? 'selected' : '' }}>{{ $part->name }}</option>
+                    <div class="col-md-6 col-xl-2">
+                        <input type="text" name="part_name" value="{{ request('part_name') }}" class="form-control" placeholder="Part name or model">
+                    </div>
+                    <div class="col-md-6 col-xl-2">
+                        <select name="category_id" class="form-select">
+                            <option value="">All categories</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6 col-xl-1">
+                        <select name="plant_id" class="form-select">
+                            @if($plants->count() > 1)
+                                <option value="">All plants</option>
+                            @endif
+                            @foreach($plants as $plant)
+                                <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-xl-2">
                         <input type="date" name="date_from" value="{{ request('date_from', $dateFrom) }}" class="form-control">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6 col-xl-2">
                         <input type="date" name="date_to" value="{{ request('date_to', $dateTo) }}" class="form-control">
                     </div>
-                    <div class="col-md-2">
-                        <div class="row gx-2">
-                            <div class="col-6">
-                                <button type="submit" class="btn btn-primary w-100">Filter</button>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ route('issues.index') }}" class="btn btn-secondary w-100">Reset</a>
-                            </div>
+                    <div class="col-md-6 col-xl-1">
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm flex-fill">Filter</button>
+                            <a href="{{ route('issues.index') }}" class="btn btn-secondary btn-sm flex-fill">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -70,10 +79,6 @@
                         </thead>
                         <tbody>
                             @forelse ($issues as $issue)
-                                @php
-                                    $price = $issue->part?->currentStock?->last_purchase_price ?? 0;
-                                    $amount = $issue->qty * $price;
-                                @endphp
                                 <tr>
                                     <td class="text-center align-middle">{{ $issues->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $issue->issue_no }}</td>
@@ -81,8 +86,8 @@
                                     <td class="align-middle">{{ $issue->part?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->part?->model ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->qty) }}</td>
-                                    <td class="text-end align-middle">{{ number_format($price) }}</td>
-                                    <td class="text-end align-middle">{{ number_format($amount) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($issue->price) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($issue->amount) }}</td>
                                     <td class="align-middle">{{ $issue->remark ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->issued_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->issue_by }}</td>

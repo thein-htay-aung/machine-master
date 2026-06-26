@@ -11,7 +11,10 @@ class Issue extends Model
     protected $fillable = [
         'issue_no',
         'part_id',
+        'plant_id',
         'qty',
+        'price',
+        'amount',
         'remark',
         'issued_date',
         'issue_by',
@@ -19,12 +22,19 @@ class Issue extends Model
     ];
 
     protected $casts = [
+        'price' => 'decimal:2',
+        'amount' => 'decimal:2',
         'issued_date' => 'date',
     ];
 
     public function part()
     {
         return $this->belongsTo(Part::class);
+    }
+
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
     }
 
     public function createdBy()

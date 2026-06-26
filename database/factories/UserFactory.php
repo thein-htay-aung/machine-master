@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Department;
+use App\Models\Plant;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -41,6 +42,11 @@ class UserFactory extends Factory
             'department_id' => Department::query()->value('id')
                 ?? Department::query()->create([
                     'name' => 'Engineering',
+                ])->id,
+            'plant_id' => Plant::query()->where('name', 'All')->value('id')
+                ?? Plant::query()->value('id')
+                ?? Plant::query()->create([
+                    'name' => 'All',
                 ])->id,
         ];
     }

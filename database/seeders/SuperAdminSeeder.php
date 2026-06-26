@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Department;
+use App\Models\Plant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,6 +24,7 @@ class SuperAdminSeeder extends Seeder
                 'email_verified_at' => now(),
                 'status' => true,
                 'department_id' => Department::query()->where('name', 'System')->value('id'),
+                'plant_id' => Plant::query()->where('name', 'All')->value('id'),
             ]
         );
     }

@@ -11,6 +11,7 @@ class Purchase extends Model
     protected $fillable = [
         'invoice',
         'part_id',
+        'plant_id',
         'price',
         'qty',
         'amount',
@@ -29,6 +30,11 @@ class Purchase extends Model
     public function part()
     {
         return $this->belongsTo(Part::class);
+    }
+
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
     }
 
     public function createdBy()

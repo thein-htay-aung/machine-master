@@ -13,7 +13,7 @@ class PlantSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (['WTY', 'SLB'] as $plant) {
+        foreach (['WTY', 'SLB', 'All'] as $plant) {
             Plant::firstOrCreate(['name' => $plant]);
         }
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\DailyStocksExport;
 use App\Models\CurrentStock;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class StockController extends Controller
 {
+    use ResolvesPlantOptions;
+
     /**
      * Display current stock balances.
      */
@@ -19,6 +22,13 @@ class StockController extends Controller
             ->orderByDesc('qty');
 
         $name = $request->query('name');
+        $categoryId = $request->query('category_id');
+        $plantId = $request->query('plant_id');
+        $categories = $this->selectableCategories();
+        $selectableCategoryIds = $categories->pluck('id')->all();
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
+        $selectablePlantIds = $plants->pluck('id')->all();
 
         if ($name !== null && $name !== '') {
             $query->whereHas('item', function ($builder) use ($name) {
@@ -27,9 +37,19 @@ class StockController extends Controller
             });
         }
 
+        if ($categoryId !== null && $categoryId !== '' && in_array((int) $categoryId, $selectableCategoryIds, true)) {
+            $query->whereHas('item', fn ($builder) => $builder->where('category_id', $categoryId));
+        }
+
+        if ($plantId !== null && $plantId !== '' && in_array((int) $plantId, $selectablePlantIds, true)) {
+            $query->whereHas('item', fn ($builder) => $builder->where('plant_id', $plantId));
+        } elseif ($defaultPlantId) {
+            $query->whereHas('item', fn ($builder) => $builder->where('plant_id', $defaultPlantId));
+        }
+
         $stocks = $query->paginate(10)->withQueryString();
 
-        return view('stocks.index', compact('stocks'));
+        return view('stocks.index', compact('stocks', 'categories', 'plants', 'defaultPlantId'));
     }
 
     /**
@@ -46,7 +66,7 @@ class StockController extends Controller
         $dateTo = $validated['date_to'] ?? now()->toDateString();
 
         return Excel::download(
-            new DailyStocksExport($dateFrom, $dateTo),
+            new DailyStocksExport($dateFrom, $dateTo, $this->selectablePlantIds()),
             'daily-stocks.xlsx'
         );
     }

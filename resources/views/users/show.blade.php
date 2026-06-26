@@ -63,6 +63,10 @@
                     <p>{{ $user->department?->name ?? '-' }}</p>
                 </div>
                 <div class="mb-3">
+                    <strong>Plant</strong>
+                    <p>{{ $user->plant?->name ?? '-' }}</p>
+                </div>
+                <div class="mb-3">
                     <strong>Created At</strong>
                     <p>{{ $user->created_at->format('Y-m-d H:i') }}</p>
                 </div>

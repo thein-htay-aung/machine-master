@@ -123,9 +123,11 @@
                         <div class="col-md-4">
                             <label class="form-label">Plant</label>
                             <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror">
-                                <option value="">Select Plant</option>
+                                @if($plants->count() > 1)
+                                    <option value="">Select Plant</option>
+                                @endif
                                 @foreach ($plants as $plant)
-                                    <option value="{{ $plant->id }}" {{ old('plant_id', $machine->plant_id) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                                    <option value="{{ $plant->id }}" {{ old('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
                                 @endforeach
                             </select>
                             @error('plant_id')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\PartsExport;
 use App\Models\CurrentStock;
 use App\Models\Part;
@@ -9,12 +10,15 @@ use App\Models\Category;
 use App\Models\Plant;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PartController extends Controller
 {
+    use ResolvesPlantOptions;
+
     public function index(Request $request)
     {
         $query = Part::with(['category', 'plant', 'unit'])->orderBy('name');
@@ -28,12 +32,21 @@ class PartController extends Controller
             $query->where('name', 'like', '%' . $name . '%');
         }
 
-        if ($categoryId !== null && $categoryId !== '') {
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
+        $categories = $this->selectableCategories();
+        $selectableCategoryIds = $categories->pluck('id')->all();
+
+        if ($categoryId !== null && $categoryId !== '' && in_array((int) $categoryId, $selectableCategoryIds, true)) {
             $query->where('category_id', $categoryId);
         }
 
-        if ($plantId !== null && $plantId !== '') {
+        $selectablePlantIds = $plants->pluck('id')->all();
+
+        if ($plantId !== null && $plantId !== '' && in_array((int) $plantId, $selectablePlantIds, true)) {
             $query->where('plant_id', $plantId);
+        } elseif ($defaultPlantId) {
+            $query->where('plant_id', $defaultPlantId);
         }
 
         if ($isActive !== null && $isActive !== '') {
@@ -42,10 +55,7 @@ class PartController extends Controller
 
         $parts = $query->paginate(10)->withQueryString();
 
-        $categories = Category::orderBy('name')->get();
-        $plants = Plant::orderBy('name')->get();
-
-        return view('parts.index', compact('parts', 'categories', 'plants'));
+        return view('parts.index', compact('parts', 'categories', 'plants', 'defaultPlantId'));
     }
 
     public function export(Request $request)
@@ -75,18 +85,21 @@ class PartController extends Controller
             return view('parts._search_results', compact('parts'));
         }
 
-        $categories = Category::orderBy('name')->get();
-        $plants = Plant::orderBy('name')->get();
-        return view('parts.index', compact('parts', 'categories', 'plants'));
+        $categories = $this->selectableCategories();
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
+        return view('parts.index', compact('parts', 'categories', 'plants', 'defaultPlantId'));
     }
 
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
-        $plants = Plant::orderBy('name')->get();
-        $units = Unit::orderBy('name')->get();
+        $plants = $this->selectablePlants();
+        $selectablePlantIds = $plants->pluck('id')->all();
+        $categories = Category::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $units = Unit::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $defaultPlantId = $this->defaultPlantId();
 
-        return view('parts.create', compact('categories', 'plants', 'units'));
+        return view('parts.create', compact('categories', 'plants', 'units', 'defaultPlantId'));
     }
 
     public function store(Request $request)
@@ -96,10 +109,16 @@ class PartController extends Controller
             'model' => 'nullable|string|max:255',
             'brand' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
-            'plant_id' => 'required|exists:plants,id',
-            'category_id' => 'nullable|exists:categories,id',
+            'plant_id' => ['required', $this->plantValidationRule()],
+            'category_id' => [
+                'nullable',
+                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+            ],
             'is_active' => 'sometimes|boolean',
-            'unit_id' => 'nullable|exists:units,id',
+            'unit_id' => [
+                'nullable',
+                Rule::exists('units', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+            ],
             'min_qty' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
@@ -135,11 +154,13 @@ class PartController extends Controller
 
     public function edit(Part $part)
     {
-        $categories = Category::orderBy('name')->get();
-        $plants = Plant::orderBy('name')->get();
-        $units = Unit::orderBy('name')->get();
+        $plants = $this->selectablePlants();
+        $selectablePlantIds = $plants->pluck('id')->all();
+        $categories = Category::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $units = Unit::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $defaultPlantId = $this->defaultPlantId($part->plant_id);
 
-        return view('parts.edit', compact('part', 'categories', 'plants', 'units'));
+        return view('parts.edit', compact('part', 'categories', 'plants', 'units', 'defaultPlantId'));
     }
 
     public function update(Request $request, Part $part)
@@ -149,10 +170,16 @@ class PartController extends Controller
             'model' => 'nullable|string|max:255',
             'brand' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
-            'plant_id' => 'required|exists:plants,id',
-            'category_id' => 'nullable|exists:categories,id',
+            'plant_id' => ['required', $this->plantValidationRule()],
+            'category_id' => [
+                'nullable',
+                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+            ],
             'is_active' => 'sometimes|boolean',
-            'unit_id' => 'nullable|exists:units,id',
+            'unit_id' => [
+                'nullable',
+                Rule::exists('units', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+            ],
             'min_qty' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'remove_image' => 'sometimes|boolean',
@@ -191,4 +218,5 @@ class PartController extends Controller
 
         return redirect()->route('parts.index', $request->query())->with('success', 'Part deleted successfully.');
     }
+
 }

@@ -23,7 +23,7 @@
                     @csrf
 
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Adjusted Date</label>
                             <input type="date" name="adjusted_date" value="{{ old('adjusted_date', now()->format('Y-m-d')) }}" class="form-control @error('adjusted_date') is-invalid @enderror">
                             @error('adjusted_date')
@@ -31,10 +31,25 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Adjusted By</label>
                             <input type="text" name="adjusted_by" value="{{ old('adjusted_by') }}" class="form-control @error('adjusted_by') is-invalid @enderror" required>
                             @error('adjusted_by')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Plant</label>
+                            <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror" id="plantSelect">
+                                @if($plants->count() > 1)
+                                    <option value="">Select Plant</option>
+                                @endif
+                                @foreach ($plants as $plant)
+                                    <option value="{{ $plant->id }}" {{ old('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('plant_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -70,7 +85,7 @@
                                             <select name="items[{{ $index }}][category_id]" class="form-select item-category @error('items.' . $index . '.category_id') is-invalid @enderror">
                                                 <option value="">All categories</option>
                                                 @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ ($item['category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                    <option value="{{ $category->id }}" data-plant-id="{{ $category->plant_id }}" {{ ($item['category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('items.' . $index . '.category_id')
@@ -81,7 +96,7 @@
                                             <select name="items[{{ $index }}][part_id]" class="form-select item-part @error('items.' . $index . '.part_id') is-invalid @enderror">
                                                 <option value="">Select part</option>
                                                 @foreach ($parts as $part)
-                                                    <option value="{{ $part->id }}" data-category-id="{{ $part->category_id }}" data-brand="{{ $part->brand ?? '-' }}" data-model="{{ $part->model ?? '-' }}" {{ ($item['part_id'] ?? '') == $part->id ? 'selected' : '' }}>{{ $part->name }}</option>
+                                                    <option value="{{ $part->id }}" data-plant-id="{{ $part->plant_id }}" data-category-id="{{ $part->category_id }}" data-brand="{{ $part->brand ?? '-' }}" data-model="{{ $part->model ?? '-' }}" {{ ($item['part_id'] ?? '') == $part->id ? 'selected' : '' }}>{{ $part->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('items.' . $index . '.part_id')
@@ -116,7 +131,7 @@
                                             @enderror
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-danger remove-item-row">Remove</button>
+                                            <button type="button" class="btn btn-sm p-0 border-0 bg-transparent text-danger remove-item-row" title="Delete"><i class="bi bi-trash fs-5"></i></button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -139,7 +154,7 @@
                 <select name="items[__INDEX__][category_id]" class="form-select item-category">
                     <option value="">All categories</option>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        <option value="{{ $category->id }}" data-plant-id="{{ $category->plant_id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
             </td>
@@ -147,7 +162,7 @@
                 <select name="items[__INDEX__][part_id]" class="form-select item-part">
                     <option value="">Select part</option>
                     @foreach ($parts as $part)
-                        <option value="{{ $part->id }}" data-category-id="{{ $part->category_id }}" data-brand="{{ $part->brand ?? '-' }}" data-model="{{ $part->model ?? '-' }}">{{ $part->name }}</option>
+                        <option value="{{ $part->id }}" data-plant-id="{{ $part->plant_id }}" data-category-id="{{ $part->category_id }}" data-brand="{{ $part->brand ?? '-' }}" data-model="{{ $part->model ?? '-' }}">{{ $part->name }}</option>
                     @endforeach
                 </select>
             </td>
@@ -170,7 +185,7 @@
                 <input type="text" name="items[__INDEX__][reason]" class="form-control" required>
             </td>
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-danger remove-item-row">Remove</button>
+                <button type="button" class="btn btn-sm p-0 border-0 bg-transparent text-danger remove-item-row" title="Delete"><i class="bi bi-trash fs-5"></i></button>
             </td>
         </tr>
     </template>
@@ -181,9 +196,32 @@
         const itemsBody = document.getElementById('adjustmentItems');
         const addItemRowButton = document.getElementById('addItemRow');
         const itemTemplate = document.getElementById('adjustmentItemTemplate').innerHTML;
+        const plantSelect = document.getElementById('plantSelect');
         let nextItemIndex = {{ count($oldItems) }};
 
+        function filterCategoryOptions(row) {
+            const plantId = plantSelect?.value || '';
+            const categorySelect = row.querySelector('.item-category');
+            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+
+            Array.from(categorySelect.options).forEach((option) => {
+                if (!option.value) {
+                    option.hidden = false;
+                    return;
+                }
+
+                option.hidden = plantId === '' || option.dataset.plantId !== plantId;
+            });
+
+            if (selectedOption && selectedOption.value && selectedOption.hidden) {
+                categorySelect.value = '';
+            }
+
+            categorySelect.disabled = plantId === '';
+        }
+
         function filterPartOptions(row) {
+            const plantId = plantSelect?.value || '';
             const categoryId = row.querySelector('.item-category')?.value || '';
             const partSelect = row.querySelector('.item-part');
             const selectedOption = partSelect.options[partSelect.selectedIndex];
@@ -194,12 +232,28 @@
                     return;
                 }
 
-                option.hidden = categoryId !== '' && option.dataset.categoryId !== categoryId;
+                option.hidden = plantId === ''
+                    || option.dataset.plantId !== plantId
+                    || (categoryId !== '' && option.dataset.categoryId !== categoryId);
             });
 
             if (selectedOption && selectedOption.value && selectedOption.hidden) {
                 partSelect.value = '';
             }
+
+            partSelect.disabled = plantId === '';
+        }
+
+        function filterItemRow(row) {
+            filterCategoryOptions(row);
+            filterPartOptions(row);
+            updatePartDetails(row);
+        }
+
+        function filterAllRows() {
+            itemsBody.querySelectorAll('.adjustment-item-row').forEach((row) => {
+                filterItemRow(row);
+            });
         }
 
         function updatePartDetails(row) {
@@ -223,8 +277,7 @@
             nextItemIndex += 1;
 
             const newRow = itemsBody.querySelector('.adjustment-item-row:last-child');
-            filterPartOptions(newRow);
-            updatePartDetails(newRow);
+            filterItemRow(newRow);
             refreshRemoveButtons();
         });
 
@@ -241,16 +294,19 @@
             }
         });
 
+        plantSelect?.addEventListener('change', filterAllRows);
+
         itemsBody.addEventListener('click', (event) => {
-            if (event.target.classList.contains('remove-item-row')) {
-                event.target.closest('.adjustment-item-row').remove();
+            const removeButton = event.target.closest('.remove-item-row');
+
+            if (removeButton) {
+                removeButton.closest('.adjustment-item-row').remove();
                 refreshRemoveButtons();
             }
         });
 
         itemsBody.querySelectorAll('.adjustment-item-row').forEach((row) => {
-            filterPartOptions(row);
-            updatePartDetails(row);
+            filterItemRow(row);
         });
         refreshRemoveButtons();
     </script>

@@ -28,6 +28,7 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Role</th>
                                 <th scope="col">Department</th>
+                                <th scope="col" class="text-center">Plant</th>
                                 <th scope="col" class="text-center">Verified</th>
                                 <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
@@ -41,6 +42,7 @@
                                     <td class="align-middle">{{ $user->email }}</td>
                                     <td class="align-middle">{{ $user->role->name }}</td>
                                     <td class="align-middle">{{ $user->department?->name ?? '-' }}</td>
+                                    <td class="text-center align-middle">{{ $user->plant?->name ?? '-' }}</td>
                                     <td class="text-center align-middle">
                                         @if($user->hasVerifiedEmail())
                                             <span class="badge bg-success">Yes</span>
@@ -56,14 +58,14 @@
                                         @endif
                                     </td>
                                     <td class="text-center align-middle">
-                                        <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                            <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm btn-warning">Show</a>
-                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-info">Edit</a>
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm p-0 border-0 bg-transparent text-info" title="Detail"><i class="bi bi-eye fs-5"></i></a>
+                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
                                             @if(!$user->isSuperAdmin())
                                                 <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Delete this user?');" class="m-0">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
                                                 </form>
                                             @endif
                                         </div>
@@ -71,7 +73,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No users found.</td>
+                                    <td colspan="9" class="text-center">No users found.</td>
                                 </tr>
                             @endforelse
 

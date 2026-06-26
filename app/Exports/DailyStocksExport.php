@@ -13,7 +13,8 @@ class DailyStocksExport implements FromArray, WithHeadings
 {
     public function __construct(
         private readonly string $dateFrom,
-        private readonly string $dateTo
+        private readonly string $dateTo,
+        private readonly array $plantIds = []
     ) {
     }
 
@@ -22,7 +23,8 @@ class DailyStocksExport implements FromArray, WithHeadings
         $dateFrom = Carbon::parse($this->dateFrom)->startOfDay();
         $dateTo = Carbon::parse($this->dateTo)->startOfDay();
 
-        $parts = Part::with(['category', 'unit'])
+        $parts = Part::with(['plant', 'category', 'unit'])
+            ->when($this->plantIds !== [], fn ($query) => $query->whereIn('plant_id', $this->plantIds))
             ->orderBy('name')
             ->get();
 
@@ -54,6 +56,7 @@ class DailyStocksExport implements FromArray, WithHeadings
                     $part->brand,
                     $part->model,
                     $part->category?->name,
+                    $part->plant?->name,
                     $part->unit?->name,
                     $openingBalance,
                     $dailyStock?->in_qty ?? 0,
@@ -76,6 +79,7 @@ class DailyStocksExport implements FromArray, WithHeadings
             'Brand',
             'Model',
             'Category',
+            'Plant Name',
             'Unit',
             'Opening Balance',
             'In Qty',

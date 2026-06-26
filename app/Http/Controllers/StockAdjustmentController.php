@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\StockAdjustmentsExport;
 use App\Models\Category;
 use App\Models\CurrentStock;
@@ -10,29 +11,52 @@ use App\Models\Part;
 use App\Models\StockAdjustment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
 class StockAdjustmentController extends Controller
 {
+    use ResolvesPlantOptions;
+
     /**
      * Display a listing of stock adjustments.
      */
     public function index(Request $request)
     {
-        $query = StockAdjustment::with(['part.currentStock', 'createdBy'])->latest('created_at');
+        $query = StockAdjustment::with(['part', 'plant', 'createdBy'])->latest('created_at');
 
         $adjustmentNo = $request->query('adjustment_no');
-        $partId = $request->query('part_id');
+        $partName = $request->query('part_name');
+        $categoryId = $request->query('category_id');
+        $plantId = $request->query('plant_id');
         $dateFrom = $request->query('date_from', now()->toDateString());
         $dateTo = $request->query('date_to', now()->toDateString());
+        $categories = $this->selectableCategories();
+        $selectableCategoryIds = $categories->pluck('id')->all();
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
+        $selectablePlantIds = $plants->pluck('id')->all();
 
         if ($adjustmentNo !== null && $adjustmentNo !== '') {
             $query->where('adjustment_no', 'like', '%' . $adjustmentNo . '%');
         }
 
-        if ($partId !== null && $partId !== '') {
-            $query->where('part_id', $partId);
+        if ($partName !== null && $partName !== '') {
+            $query->whereHas('part', function ($builder) use ($partName) {
+                $builder->where('name', 'like', '%' . $partName . '%')
+                    ->orWhere('model', 'like', '%' . $partName . '%');
+            });
+        }
+
+        if ($categoryId !== null && $categoryId !== '' && in_array((int) $categoryId, $selectableCategoryIds, true)) {
+            $query->whereHas('part', fn ($builder) => $builder->where('category_id', $categoryId));
+        }
+
+        if ($plantId !== null && $plantId !== '' && in_array((int) $plantId, $selectablePlantIds, true)) {
+            $query->where('plant_id', $plantId);
+        } elseif ($defaultPlantId) {
+            $query->where('plant_id', $defaultPlantId);
         }
 
         if ($dateFrom !== null && $dateFrom !== '') {
@@ -44,9 +68,8 @@ class StockAdjustmentController extends Controller
         }
 
         $adjustments = $query->paginate(10)->withQueryString();
-        $parts = Part::orderBy('name')->get();
 
-        return view('stock-adjustments.index', compact('adjustments', 'parts', 'dateFrom', 'dateTo'));
+        return view('stock-adjustments.index', compact('adjustments', 'categories', 'plants', 'defaultPlantId', 'dateFrom', 'dateTo'));
     }
 
     public function export(Request $request)
@@ -59,10 +82,13 @@ class StockAdjustmentController extends Controller
      */
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
-        $parts = Part::orderBy('name')->get();
+        $plants = $this->selectablePlants();
+        $selectablePlantIds = $plants->pluck('id')->all();
+        $defaultPlantId = $this->defaultPlantId();
+        $categories = Category::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $parts = Part::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
 
-        return view('stock-adjustments.create', compact('categories', 'parts'));
+        return view('stock-adjustments.create', compact('categories', 'parts', 'plants', 'defaultPlantId'));
     }
 
     /**
@@ -73,9 +99,16 @@ class StockAdjustmentController extends Controller
         $validated = $request->validate([
             'adjusted_date' => 'required|date',
             'adjusted_by' => 'required|string|max:255',
+            'plant_id' => ['required', $this->plantValidationRule()],
             'items' => 'required|array|min:1',
-            'items.*.category_id' => 'nullable|exists:categories,id',
-            'items.*.part_id' => 'required|exists:parts,id',
+            'items.*.category_id' => [
+                'nullable',
+                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+            ],
+            'items.*.part_id' => [
+                'required',
+                Rule::exists('parts', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+            ],
             'items.*.symbol' => 'required|in:+,-',
             'items.*.qty' => 'required|integer|min:1',
             'items.*.reason' => 'required|string|max:1000',
@@ -98,11 +131,17 @@ class StockAdjustmentController extends Controller
                     ]);
                 }
 
+                $price = (float) ($currentStock->last_purchase_price ?? 0);
+                $amount = $price * $qty;
+
                 StockAdjustment::create([
                     'adjustment_no' => $adjustmentNo,
                     'part_id' => $item['part_id'],
+                    'plant_id' => $validated['plant_id'],
                     'symbol' => $item['symbol'],
                     'qty' => $qty,
+                    'price' => $price,
+                    'amount' => $amount,
                     'reason' => $item['reason'],
                     'adjusted_date' => $validated['adjusted_date'],
                     'adjusted_by' => $validated['adjusted_by'],
@@ -149,7 +188,7 @@ class StockAdjustmentController extends Controller
 
     private function generateAdjustmentNo(string $adjustedDate): string
     {
-        $prefix = 'ADJ-' . date('Ymd', strtotime($adjustedDate)) . '-';
+        $prefix = 'AD-' . date('Ymd', strtotime($adjustedDate)) . '-';
         $latestAdjustmentNo = StockAdjustment::where('adjustment_no', 'like', $prefix . '%')->max('adjustment_no');
         $nextNumber = $latestAdjustmentNo ? ((int) substr($latestAdjustmentNo, -4)) + 1 : 1;
 

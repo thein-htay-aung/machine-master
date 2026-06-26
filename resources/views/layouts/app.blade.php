@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
     <style>
         .app-logo {
             width: 32px;

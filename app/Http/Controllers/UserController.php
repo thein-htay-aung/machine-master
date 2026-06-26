@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Models\Department;
 use App\Models\User;
 use App\Models\Role;
@@ -14,6 +15,8 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    use ResolvesPlantOptions;
+
     public function __construct()
     {
         $this->middleware('role:superadmin')->except(['editPassword', 'updatePassword']);
@@ -24,7 +27,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['role', 'department'])->paginate(10);
+        $users = User::with(['role', 'department', 'plant'])->paginate(10);
         return view('users.index', compact('users'));
     }
 
@@ -35,8 +38,10 @@ class UserController extends Controller
     {
         $roles = Role::where('name', '!=', 'superadmin')->orderBy('name')->get();
         $departments = Department::where('name', '!=', 'System')->orderBy('name')->get();
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
 
-        return view('users.create', compact('roles', 'departments'));
+        return view('users.create', compact('roles', 'departments', 'plants', 'defaultPlantId'));
     }
 
     /**
@@ -49,6 +54,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
+            'plant_id' => ['required', $this->plantValidationRule()],
         ]);
 
         $password = Str::random(8);
@@ -58,6 +64,7 @@ class UserController extends Controller
             'password' => Hash::make($password),
             'role_id' => $request->role_id,
             'department_id' => $request->department_id,
+            'plant_id' => $request->plant_id,
             'status' => true,
         ]);
 
@@ -85,7 +92,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user->load(['role', 'department']);
+        $user->load(['role', 'department', 'plant']);
 
         return view('users.show', compact('user'));
     }
@@ -97,8 +104,10 @@ class UserController extends Controller
     {
         $roles = Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId($user->plant_id);
 
-        return view('users.edit', compact('user', 'roles', 'departments'));
+        return view('users.edit', compact('user', 'roles', 'departments', 'plants', 'defaultPlantId'));
     }
 
     /**
@@ -111,6 +120,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
+            'plant_id' => ['required', $this->plantValidationRule()],
             'status' => 'required|boolean',
         ]);
 
@@ -119,6 +129,7 @@ class UserController extends Controller
             'email' => $request->email,
             'role_id' => $request->role_id,
             'department_id' => $request->department_id,
+            'plant_id' => $request->plant_id,
             'status' => $request->boolean('status'),
         ]);
 
@@ -191,4 +202,5 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted.');
     }
+
 }

@@ -36,9 +36,11 @@
                     </div>
                     <div class="col-md-2">
                         <select name="plant_id" class="form-select">
-                            <option value="">All plants</option>
+                            @if($plants->count() > 1)
+                                <option value="">All plants</option>
+                            @endif
                             @foreach($plants as $plant)
-                                <option value="{{ $plant->id }}" {{ request('plant_id') == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                                <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -100,13 +102,13 @@
                                         </span>
                                     </td>
                                     <td class="text-center align-middle">
-                                        <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                            <a href="{{ route('parts.show', ['part' => $part->id] + request()->query()) }}" class="btn btn-sm btn-warning">Detail</a>
-                                            <a href="{{ route('parts.edit', $part->id) }} {{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-info">Edit</a>
-                                            <form action="{{ route('parts.destroy', $part->id) }} {{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this part?');" class="m-0">
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a href="{{ route('parts.show', ['part' => $part->id] + request()->query()) }}" class="btn btn-sm p-0 border-0 bg-transparent text-info" title="Detail"><i class="bi bi-eye fs-5"></i></a>
+                                            <a href="{{ route('parts.edit', $part->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
+                                            <form action="{{ route('parts.destroy', $part->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this part?');" class="m-0">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
                                             </form>
                                         </div>
                                     </td>

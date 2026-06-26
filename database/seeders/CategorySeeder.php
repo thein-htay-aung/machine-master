@@ -30,7 +30,7 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $name) {
-            Category::updateOrCreate(['name' => $name], ['name' => $name]);
+            Category::updateOrCreate(['name' => $name], ['name' => $name, 'plant_id' => 1]);
         }
     }
 }

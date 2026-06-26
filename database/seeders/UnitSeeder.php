@@ -16,10 +16,10 @@ class UnitSeeder extends Seeder
     public function run(): void
     {
         $units = [
-            ['name' => 'Pc'],
-            ['name' => 'Box'],
-            ['name' => 'L'],
-            ['name' => 'mm'],
+            ['name' => 'Pc', 'plant_id' => 1],
+            ['name' => 'Box', 'plant_id' => 1],
+            ['name' => 'L', 'plant_id' => 1],
+            ['name' => 'mm', 'plant_id' => 1],
         ];
 
         foreach ($units as $unit) {
