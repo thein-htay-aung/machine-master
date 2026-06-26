@@ -59,6 +59,8 @@
                                 <th scope="col">Brand</th>
                                 <th scope="col">Model</th>
                                 <th scope="col" class="text-end">Qty</th>
+                                <th scope="col" class="text-end">Price</th>
+                                <th scope="col" class="text-end">Amount</th>
                                 <th scope="col">Remark</th>
                                 <th scope="col">Issued Date</th>
                                 <th scope="col">Issue By</th>
@@ -68,6 +70,10 @@
                         </thead>
                         <tbody>
                             @forelse ($issues as $issue)
+                                @php
+                                    $price = $issue->part?->currentStock?->last_purchase_price ?? 0;
+                                    $amount = $issue->qty * $price;
+                                @endphp
                                 <tr>
                                     <td class="text-center align-middle">{{ $issues->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $issue->issue_no }}</td>
@@ -75,6 +81,8 @@
                                     <td class="align-middle">{{ $issue->part?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->part?->model ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->qty) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($price) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($amount) }}</td>
                                     <td class="align-middle">{{ $issue->remark ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->issued_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->issue_by }}</td>
@@ -83,7 +91,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center">No issues found.</td>
+                                    <td colspan="13" class="text-center">No issues found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

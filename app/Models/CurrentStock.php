@@ -11,6 +11,11 @@ class CurrentStock extends Model
     protected $fillable = [
         'item_id',
         'qty',
+        'last_purchase_price',
+    ];
+
+    protected $casts = [
+        'last_purchase_price' => 'decimal:2',
     ];
 
     public function item()

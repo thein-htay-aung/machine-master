@@ -57,10 +57,20 @@
                                 <th scope="col" class="text-center">Plant</th>
                                 <th scope="col">Unit</th>
                                 <th scope="col" class="text-end">Current Qty</th>
+                                <th scope="col" class="text-end">Price</th>
+                                <th scope="col" class="text-end">Amount</th>
+                                <th scope="col" class="text-end">Min Stock Qty</th>
+                                <th scope="col" class="text-center">Stock Alert</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($stocks as $stock)
+                                @php
+                                    $minQty = $stock->item?->min_qty;
+                                    $isLowStock = $minQty !== null && $stock->qty <= $minQty;
+                                    $price = $stock->last_purchase_price ?? 0;
+                                    $amount = $stock->qty * $price;
+                                @endphp
                                 <tr>
                                     <td class="text-center align-middle">{{ $stocks->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $stock->item?->name ?? '-' }}</td>
@@ -70,10 +80,22 @@
                                     <td class="text-center align-middle">{{ $stock->item?->plant?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $stock->item?->unit?->name ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($stock->qty) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($price) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($amount) }}</td>
+                                    <td class="text-end align-middle">{{ $minQty !== null ? number_format($minQty) : '-' }}</td>
+                                    <td class="text-center align-middle">
+                                        @if($minQty === null)
+                                            <span class="badge bg-secondary">Not Set</span>
+                                        @elseif($isLowStock)
+                                            <span class="badge bg-danger">Low Stock</span>
+                                        @else
+                                            <span class="badge bg-success">OK</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">No current stock found.</td>
+                                    <td colspan="12" class="text-center">No current stock found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

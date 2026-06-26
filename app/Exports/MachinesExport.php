@@ -15,7 +15,7 @@ class MachinesExport implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        return Machine::with(['plant', 'status'])
+        return Machine::with(['plant', 'status', 'createdBy', 'updatedBy'])
             ->when($this->filters['control_no'] ?? null, fn ($query, $value) => $query->where('control_no', 'like', '%' . $value . '%'))
             ->when($this->filters['name'] ?? null, fn ($query, $value) => $query->where('name', 'like', '%' . $value . '%'))
             ->when($this->filters['status_id'] ?? null, fn ($query, $value) => $query->where('status_id', $value))
@@ -32,14 +32,23 @@ class MachinesExport implements FromCollection, WithHeadings, WithMapping
             'Brand',
             'Model',
             'Serial No.',
-            'Plant',
-            'Status',
-            'Location',
+            'Supplier',
             'Arrived Date',
+            'Location',
+            'Status',
+            'Category',
+            'Plant',
+            'Dimension',
+            'Weight',
+            'Electrical',
             'Currency',
             'Unit Price',
             'Fixed Asset',
+            'Remark',
+            'Created By',
+            'Updated By',
             'Created At',
+            'Updated At',
         ];
     }
 
@@ -51,14 +60,23 @@ class MachinesExport implements FromCollection, WithHeadings, WithMapping
             $machine->brand,
             $machine->model,
             $machine->serial_no,
-            $machine->plant?->name,
-            $machine->status?->name,
+            $machine->supplier,
+            $machine->arrived_date?->format('Y-m-d'),
             $machine->location,
-            $machine->arrived_date,
+            $machine->status?->name,
+            $machine->category,
+            $machine->plant?->name,
+            $machine->dimension,
+            $machine->weight,
+            $machine->electrical,
             $machine->currency,
             $machine->unit_price,
             $machine->is_fixed_asset ? 'Yes' : 'No',
+            $machine->remark,
+            $machine->createdBy?->name ?? 'System',
+            $machine->updatedBy?->name ?? 'System',
             $machine->created_at?->format('Y-m-d H:i:s'),
+            $machine->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

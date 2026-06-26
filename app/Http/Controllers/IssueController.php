@@ -20,7 +20,7 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Issue::with(['part', 'createdBy'])->latest('created_at');
+        $query = Issue::with(['part.currentStock', 'createdBy'])->latest('created_at');
 
         $issueNo = $request->query('issue_no');
         $partId = $request->query('part_id');

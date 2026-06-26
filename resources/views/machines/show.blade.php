@@ -67,7 +67,7 @@
                             </tr>
                             <tr>
                                 <th>Unit Price</th>
-                                <td>{{ $machine->unit_price !== null ? number_format($machine->unit_price, 2) : '-' }}</td>
+                                <td>{{ $machine->unit_price !== null ? number_format($machine->unit_price) : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Dimension</th>

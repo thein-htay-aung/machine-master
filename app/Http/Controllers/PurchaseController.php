@@ -103,6 +103,7 @@ class PurchaseController extends Controller
                     ->firstOrFail();
 
                 $currentStock->qty += $qty;
+                $currentStock->last_purchase_price = $item['price'];
                 $currentStock->save();
 
                 $dailyStock = DailyStock::where('item_id', $item['part_id'])

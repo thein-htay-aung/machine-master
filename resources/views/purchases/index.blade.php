@@ -76,9 +76,9 @@
                                     <td class="align-middle">{{ $purchase->part?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->part?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->part?->model ?? '-' }}</td>
-                                    <td class="text-end align-middle">{{ number_format($purchase->price, 2) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($purchase->price) }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->qty) }}</td>
-                                    <td class="text-end align-middle">{{ number_format($purchase->amount, 2) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($purchase->amount) }}</td>
                                     <td class="align-middle">{{ $purchase->remark ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->purchased_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->purchase_by ?? '-' }}</td>

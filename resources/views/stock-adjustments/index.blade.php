@@ -60,6 +60,8 @@
                                 <th scope="col">Model</th>
                                 <th scope="col" class="text-center">Symbol</th>
                                 <th scope="col" class="text-end">Qty</th>
+                                <th scope="col" class="text-end">Price</th>
+                                <th scope="col" class="text-end">Amount</th>
                                 <th scope="col">Reason</th>
                                 <th scope="col">Adjusted Date</th>
                                 <th scope="col">Adjusted By</th>
@@ -69,6 +71,10 @@
                         </thead>
                         <tbody>
                             @forelse ($adjustments as $adjustment)
+                                @php
+                                    $price = $adjustment->part?->currentStock?->last_purchase_price ?? 0;
+                                    $amount = $adjustment->qty * $price;
+                                @endphp
                                 <tr>
                                     <td class="text-center align-middle">{{ $adjustments->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $adjustment->adjustment_no }}</td>
@@ -79,6 +85,8 @@
                                         <span class="badge {{ $adjustment->symbol === '+' ? 'bg-success' : 'bg-danger' }}">{{ $adjustment->symbol }}</span>
                                     </td>
                                     <td class="text-end align-middle">{{ number_format($adjustment->qty) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($price) }}</td>
+                                    <td class="text-end align-middle">{{ number_format($amount) }}</td>
                                     <td class="align-middle">{{ $adjustment->reason }}</td>
                                     <td class="align-middle">{{ $adjustment->adjusted_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="align-middle">{{ $adjustment->adjusted_by }}</td>
@@ -87,7 +95,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="text-center">No stock adjustments found.</td>
+                                    <td colspan="14" class="text-center">No stock adjustments found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -116,7 +116,7 @@
                                             @enderror
                                         </td>
                                         <td>
-                                            <input type="text" value="0.00" class="form-control text-end item-amount" readonly>
+                                            <input type="text" value="0" class="form-control text-end item-amount" readonly>
                                         </td>
                                         <td>
                                             <input type="text" name="items[{{ $index }}][remark]" value="{{ $item['remark'] ?? '' }}" class="form-control @error('items.' . $index . '.remark') is-invalid @enderror">
@@ -134,7 +134,7 @@
                                 <tr>
                                     <th colspan="6" class="text-end">Total Amount</th>
                                     <th>
-                                        <input type="text" id="totalAmount" value="0.00" class="form-control text-end" readonly>
+                                        <input type="text" id="totalAmount" value="0" class="form-control text-end" readonly>
                                     </th>
                                     <th colspan="2"></th>
                                 </tr>
@@ -182,7 +182,7 @@
                 <input type="number" min="1" name="items[__INDEX__][qty]" class="form-control text-end item-qty">
             </td>
             <td>
-                <input type="text" value="0.00" class="form-control text-end item-amount" readonly>
+                <input type="text" value="0" class="form-control text-end item-amount" readonly>
             </td>
             <td>
                 <input type="text" name="items[__INDEX__][remark]" class="form-control">
@@ -237,11 +237,11 @@
                 const qty = Number(row.querySelector('.item-qty')?.value || 0);
                 const amount = price * qty;
 
-                row.querySelector('.item-amount').value = amount.toFixed(2);
+                row.querySelector('.item-amount').value = Math.round(amount).toLocaleString();
                 total += amount;
             });
 
-            totalAmountInput.value = total.toFixed(2);
+            totalAmountInput.value = Math.round(total).toLocaleString();
         }
 
         function refreshRemoveButtons() {
