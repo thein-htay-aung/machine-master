@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <style>
+        .app-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
         @media (min-width: 768px) {
             #sidebarMenu {
                 position: sticky;
@@ -73,6 +81,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand fw-semibold" href="{{ route('dashboard') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name', 'Machine Master') }} logo" class="app-logo me-2">
                 {{ config('app.name', 'Machine Master') }}
             </a>
 

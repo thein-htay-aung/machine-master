@@ -32,6 +32,7 @@ class Machine extends Model
         'remark',
         'plant_id',
         'status_id',
+        'category',
         'image',
         'created_by',
         'updated_by',

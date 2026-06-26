@@ -40,6 +40,7 @@ class MachineFactory extends Factory
             'remark' => $this->faker->sentence(),
             'plant_id' => $plantId,
             'status_id' => $statusId,
+            'category' => $this->faker->randomElement(['Production', 'Facility', 'Measurement', 'General']),
         ];
     }
 }

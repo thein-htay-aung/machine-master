@@ -109,6 +109,18 @@
                         </div>
 
                         <div class="col-md-4">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select @error('category') is-invalid @enderror">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category }}" {{ old('category', 'Production') === $category ? 'selected' : '' }}>{{ $category }}</option>
+                                @endforeach
+                            </select>
+                            @error('category')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
                             <label class="form-label">Plant</label>
                             <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror">
                                 <option value="">Select Plant</option>

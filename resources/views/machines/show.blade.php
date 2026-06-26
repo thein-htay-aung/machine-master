@@ -53,6 +53,10 @@
                                 <td>{{ $machine->status?->name ?? '-' }}</td>
                             </tr>
                             <tr>
+                                <th>Category</th>
+                                <td>{{ $machine->category ?? '-' }}</td>
+                            </tr>
+                            <tr>
                                 <th>Plant</th>
                                 <td>{{ $machine->plant->name }}</td>
                             </tr>

@@ -73,9 +73,9 @@
                         <thead class="table-success">
                             <tr>
                                 <th scope="col" class="text-center">#</th>
+                                <th scope="col">Image</th>
                                 <th scope="col">Control No.</th>
                                 <th scope="col">Name</th>
-                                <th scope="col">Image</th>
                                 <th scope="col">Model</th>
                                 <th scope="col">Brand</th>
                                 <th scope="col">Status</th>
@@ -88,11 +88,11 @@
                             @forelse ($machines as $machine)
                                 <tr>
                                     <td class="text-center align-middle">{{ $machines->firstItem() + $loop->index }}</td>
-                                    <td class="align-middle">{{ $machine->control_no }}</td>
-                                    <td class="align-middle">{{ $machine->name }}</td>
                                     <td class="align-middle text-center">
                                         <img src="{{ $machine->image_url }}" alt="{{ $machine->name }}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 0.35rem;">
                                     </td>
+                                    <td class="align-middle">{{ $machine->control_no }}</td>
+                                    <td class="align-middle">{{ $machine->name }}</td>
                                     <td class="align-middle">{{ $machine->model }}</td>
                                     <td class="align-middle">{{ $machine->brand }}</td>
                                     <td class="align-middle">

@@ -13,12 +13,14 @@ use App\Models\Issue;
 use App\Models\Purchase;
 use App\Models\StockAdjustment;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MachineController extends Controller
 {
     private const IMPORT_CURRENCIES = ['MMK', 'USD', 'SGD', 'JPY', 'CNY'];
+    private const MACHINE_CATEGORIES = ['Production', 'Facility', 'Measurement', 'General'];
     /**
      * Display a listing of the resource.
      */
@@ -67,8 +69,9 @@ class MachineController extends Controller
     {
         $plants = Plant::orderBy('name')->get();
         $statuses = Status::orderBy('name')->get();
+        $categories = self::MACHINE_CATEGORIES;
 
-        return view('machines.create', compact('plants', 'statuses'));
+        return view('machines.create', compact('plants', 'statuses', 'categories'));
     }
 
     /**
@@ -95,6 +98,7 @@ class MachineController extends Controller
             'remark' => 'nullable|string',
             'plant_id' => 'required|exists:plants,id',
             'status_id' => 'required|exists:statuses,id',
+            'category' => ['required', 'string', Rule::in(self::MACHINE_CATEGORIES)],
         ]);
 
         if ($request->hasFile('image')) {
@@ -129,8 +133,9 @@ class MachineController extends Controller
     {
         $plants = Plant::orderBy('name')->get();
         $statuses = Status::orderBy('name')->get();
+        $categories = self::MACHINE_CATEGORIES;
 
-        return view('machines.edit', compact('machine', 'plants', 'statuses'));
+        return view('machines.edit', compact('machine', 'plants', 'statuses', 'categories'));
     }
 
     /**
@@ -158,6 +163,7 @@ class MachineController extends Controller
             'remark' => 'nullable|string',
             'plant_id' => 'required|exists:plants,id',
             'status_id' => 'required|exists:statuses,id',
+            'category' => ['required', 'string', Rule::in(self::MACHINE_CATEGORIES)],
         ]);
 
         if ($request->hasFile('image')) {
@@ -382,6 +388,7 @@ class MachineController extends Controller
                 'unit_price' => $rowData['unit_price'],
                 'plant_id' => 1,
                 'status_id' => 1,
+                'category' => 'Production',
                 'is_fixed_asset' => false,
                 'remark' => $rowData['remark'],
                 'created_by' => $userId,
