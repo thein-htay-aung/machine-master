@@ -73,12 +73,12 @@
                                 <th scope="col">Model</th>
                                 <th scope="col">Category</th>
                                 <th scope="col" class="text-center">Plant</th>
-                                <th scope="col">Unit</th>
-                                <th scope="col" class="text-end">Current Qty</th>
+                                <th scope="col" class="text-center">Unit</th>
+                                <th scope="col" class="text-end">Qty</th>
                                 <th scope="col" class="text-end">Price</th>
                                 <th scope="col" class="text-end">Amount</th>
-                                <th scope="col" class="text-end">Min Stock Qty</th>
-                                <th scope="col" class="text-center">Stock Alert</th>
+                                <th scope="col" class="text-end">Min Qty</th>
+                                <th scope="col" class="text-center">Alert</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -96,7 +96,7 @@
                                     <td class="align-middle">{{ $stock->item?->model ?? '-' }}</td>
                                     <td class="align-middle">{{ $stock->item?->category?->name ?? '-' }}</td>
                                     <td class="text-center align-middle">{{ $stock->item?->plant?->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $stock->item?->unit?->name ?? '-' }}</td>
+                                    <td class="text-center align-middle">{{ $stock->item?->unit?->name ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($stock->qty) }}</td>
                                     <td class="text-end align-middle">{{ number_format($price) }}</td>
                                     <td class="text-end align-middle">{{ number_format($amount) }}</td>
