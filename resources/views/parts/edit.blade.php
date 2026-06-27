@@ -105,7 +105,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-4 d-flex align-items-center">
+                        <div class="col-md-6 d-flex align-items-center">
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $part->is_active) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="is_active">Active</label>

@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [MachineController::class, 'dashboard'])->name('dashboard');
 
         Route::get('/machines/export', [MachineController::class, 'export'])->name('machines.export');
-        Route::resource('machines', MachineController::class)->only(['index', 'show']);
+        Route::resource('machines', MachineController::class)->only(['index', 'show'])->whereNumber('machine');
 
         Route::get('/units/export', [UnitController::class, 'export'])->name('units.export');
         Route::resource('units', UnitController::class)->only(['index']);
@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/parts/search', [PartController::class, 'search'])->name('parts.search');
         Route::get('/parts/export', [PartController::class, 'export'])->name('parts.export');
-        Route::resource('parts', PartController::class)->only(['index', 'show']);
+        Route::resource('parts', PartController::class)->only(['index', 'show'])->whereNumber('part');
 
         Route::get('/purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
         Route::resource('purchases', PurchaseController::class)->only(['index']);
