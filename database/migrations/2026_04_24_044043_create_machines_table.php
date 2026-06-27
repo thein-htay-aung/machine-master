@@ -21,15 +21,19 @@ return new class extends Migration
             $table->string('supplier')->nullable();
             $table->date('arrived_date')->nullable();
             $table->string('location')->nullable();
-            $table->string('status')->nullable();
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->restrictOnDelete();
+            $table->string('category')->default('General');
             $table->string('dimension')->nullable();
             $table->string('weight')->nullable();
             $table->string('electrical')->nullable();
+            $table->string('image')->nullable();
             $table->enum('currency', ['MMK', 'USD', 'SGD', 'JPY', 'CNY'])->nullable();
             $table->decimal('unit_price', 15, 2)->nullable();
             $table->boolean('is_fixed_asset')->default(false);
             $table->text('remark')->nullable();
             $table->foreignId('plant_id')->constrained()->restrictOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -31,6 +31,6 @@ class DatabaseSeeder extends Seeder
         // $this->call(UnitSeeder::class);
         // $this->call(CategorySeeder::class);
         // $this->call(MachineSeeder::class);
-        // $this->call(SuperAdminSeeder::class);
+        $this->call(SuperAdminSeeder::class);
     }
 }

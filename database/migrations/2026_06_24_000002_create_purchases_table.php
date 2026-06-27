@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('invoice');
             $table->foreignId('part_id')->constrained('parts')->restrictOnDelete();
+            $table->foreignId('plant_id')->constrained()->restrictOnDelete();
             $table->decimal('price', 15, 2)->default(0);
             $table->unsignedInteger('qty')->default(0);
             $table->decimal('amount', 15, 2)->default(0);

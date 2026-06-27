@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('model')->nullable();
             $table->string('brand')->nullable();
             $table->string('location')->nullable();
+            $table->foreignId('plant_id')->constrained()->restrictOnDelete();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->boolean('is_active')->default(true);
             $table->foreignId('unit_id')->nullable()->constrained()->nullOnDelete();

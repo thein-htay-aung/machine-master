@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('issue_no');
             $table->foreignId('part_id')->constrained('parts')->restrictOnDelete();
+            $table->foreignId('plant_id')->constrained()->restrictOnDelete();
             $table->unsignedInteger('qty')->default(0);
+            $table->decimal('price', 15, 2)->default(0);
+            $table->decimal('amount', 15, 2)->default(0);
             $table->text('remark')->nullable();
             $table->date('issued_date');
             $table->string('issue_by');

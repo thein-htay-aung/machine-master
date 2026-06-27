@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('item_id')->unique()->constrained('parts')->restrictOnDelete();
             $table->unsignedInteger('qty')->default(0);
+            $table->decimal('last_purchase_price', 15, 2)->default(0);
         });
     }
 
