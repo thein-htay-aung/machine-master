@@ -21,7 +21,11 @@ class PartController extends Controller
 
     public function index(Request $request)
     {
-        $query = Part::with(['category', 'plant', 'unit'])->orderBy('name');
+        $query = Part::with(['category', 'plant', 'unit'])
+            ->leftJoin('categories', 'parts.category_id', '=', 'categories.id')
+            ->select('parts.*')
+            ->orderBy('categories.name')
+            ->orderBy('parts.name');
 
         $name = $request->query('name', null);
         $plantId = $request->query('plant_id', null);
@@ -29,7 +33,7 @@ class PartController extends Controller
         $isActive = $request->query('is_active', null);
 
         if ($name !== null && $name !== '') {
-            $query->where('name', 'like', '%' . $name . '%');
+            $query->where('parts.name', 'like', '%' . $name . '%');
         }
 
         $plants = $this->selectablePlants();
@@ -38,19 +42,19 @@ class PartController extends Controller
         $selectableCategoryIds = $categories->pluck('id')->all();
 
         if ($categoryId !== null && $categoryId !== '' && in_array((int) $categoryId, $selectableCategoryIds, true)) {
-            $query->where('category_id', $categoryId);
+            $query->where('parts.category_id', $categoryId);
         }
 
         $selectablePlantIds = $plants->pluck('id')->all();
 
         if ($plantId !== null && $plantId !== '' && in_array((int) $plantId, $selectablePlantIds, true)) {
-            $query->where('plant_id', $plantId);
+            $query->where('parts.plant_id', $plantId);
         } elseif ($defaultPlantId) {
-            $query->where('plant_id', $defaultPlantId);
+            $query->where('parts.plant_id', $defaultPlantId);
         }
 
         if ($isActive !== null && $isActive !== '') {
-            $query->where('is_active', (int) $isActive);
+            $query->where('parts.is_active', (int) $isActive);
         }
 
         $parts = $query->paginate(10)->withQueryString();

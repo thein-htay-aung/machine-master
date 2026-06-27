@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container">
+    <div class="container-fluid px-4">
 
         <div class="card shadow-sm">
 
@@ -26,20 +26,23 @@
 
                 <form method="GET" action="{{ route('parts.index') }}" class="row gx-3 gy-3 align-items-end mb-3">
                     <div class="col-md-3">
-                        <input type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Search name">
+                        <label class="form-label visually-hidden" for="filter-name">Name</label>
+                        <input id="filter-name" type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Name">
                     </div>
                     <div class="col-md-3">
-                        <select name="category_id" class="form-select">
-                            <option value="">All categories</option>
+                        <label class="form-label visually-hidden" for="filter-category">Category</label>
+                        <select id="filter-category" name="category_id" class="form-select">
+                            <option value="">All Categories</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <select name="plant_id" class="form-select">
+                        <label class="form-label visually-hidden" for="filter-plant">Plant</label>
+                        <select id="filter-plant" name="plant_id" class="form-select">
                             @if($plants->count() > 1)
-                                <option value="">All plants</option>
+                                <option value="">All Plants</option>
                             @endif
                             @foreach($plants as $plant)
                                 <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
@@ -47,8 +50,9 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <select name="is_active" class="form-select">
-                            <option value="">All</option>
+                        <label class="form-label visually-hidden" for="filter-status">Status</label>
+                        <select id="filter-status" name="is_active" class="form-select">
+                            <option value="">All Statuses</option>
                             <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
                             <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
                         </select>
@@ -59,7 +63,7 @@
                                 <button type="submit" class="btn btn-primary w-100">Filter</button>
                             </div>
                             <div class="col-6">
-                                <a href="{{ route('parts.index') }}" class="btn btn-secondary w-100">Reset</a>
+                                <a href="{{ route('parts.index') }}" class="btn btn-secondary w-100">Clear</a>
                             </div>
                         </div>
                     </div>
@@ -76,6 +80,7 @@
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
                                 <th scope="col" class="text-center">Plant</th>
+                                <th scope="col" class="text-center">Location</th>
                                 <th scope="col" class="text-center">Unit</th>
                                 <th scope="col" class="text-center">Min Qty</th>
                                 <th scope="col" class="text-center">Active</th>
@@ -96,6 +101,7 @@
                                     <td class="align-middle">{{ $part->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $part->category?->name ?? '-' }}</td>
                                     <td class="align-middle text-center">{{ $part->plant?->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $part->location }}</td>
                                     <td class="align-middle text-center">{{ $part->unit?->name ?? '-' }}</td>
                                     <td class="align-middle text-center">{{ $part->min_qty ?? '-' }}</td>
                                     <td class="text-center align-middle">
