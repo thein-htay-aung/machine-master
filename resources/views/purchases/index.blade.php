@@ -8,7 +8,9 @@
                 <h5 class="mb-0">Purchases</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('purchases.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
-                    <a href="{{ route('purchases.create') }}" class="btn btn-sm btn-light">+ Add Purchase</a>
+                    @if(auth()->user()->canEditRecords())
+                        <a href="{{ route('purchases.create') }}" class="btn btn-sm btn-light">+ Add Purchase</a>
+                    @endif
                 </div>
             </div>
 

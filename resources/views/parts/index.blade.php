@@ -10,7 +10,9 @@
                 <h5 class="mb-0">Parts</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('parts.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
-                    <a href="{{ route('parts.create') }}" class="btn btn-sm btn-light">+ Add New Part</a>
+                    @if(auth()->user()->canEditRecords())
+                        <a href="{{ route('parts.create') }}" class="btn btn-sm btn-light">+ Add New Part</a>
+                    @endif
                 </div>
             </div>
 
@@ -104,12 +106,16 @@
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-2 flex-wrap">
                                             <a href="{{ route('parts.show', ['part' => $part->id] + request()->query()) }}" class="btn btn-sm p-0 border-0 bg-transparent text-info" title="Detail"><i class="bi bi-eye fs-5"></i></a>
-                                            <a href="{{ route('parts.edit', $part->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
-                                            <form action="{{ route('parts.destroy', $part->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this part?');" class="m-0">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
-                                            </form>
+                                            @if(auth()->user()->canEditRecords())
+                                                <a href="{{ route('parts.edit', $part->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
+                                            @endif
+                                            @if(auth()->user()->canDeleteRecords())
+                                                <form action="{{ route('parts.destroy', $part->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this part?');" class="m-0">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

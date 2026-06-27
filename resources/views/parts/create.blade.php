@@ -49,7 +49,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Location</label>
-                            <input type="text" name="location" value="{{ old('location') }}" class="form-control @error('location') is-invalid @enderror">
+                            <input type="text" name="location" value="{{ old('location') }}" class="form-control @error('location') is-invalid @enderror" required>
                             @error('location')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -57,7 +57,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Plant</label>
-                            <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror" data-part-plant-select>
+                            <select name="plant_id" class="form-select @error('plant_id') is-invalid @enderror" data-part-plant-select required>
                                 @if($plants->count() > 1)
                                     <option value="">Select Plant</option>
                                 @endif
@@ -72,7 +72,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Category</label>
-                            <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" data-plant-dependent-select>
+                            <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" data-plant-dependent-select required>
                                 <option value="">Select category</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}" data-plant-id="{{ $category->plant_id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -85,7 +85,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Unit</label>
-                            <select name="unit_id" class="form-select @error('unit_id') is-invalid @enderror" data-plant-dependent-select>
+                            <select name="unit_id" class="form-select @error('unit_id') is-invalid @enderror" data-plant-dependent-select required>
                                 <option value="">Select unit</option>
                                 @foreach ($units as $unit)
                                     <option value="{{ $unit->id }}" data-plant-id="{{ $unit->plant_id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>

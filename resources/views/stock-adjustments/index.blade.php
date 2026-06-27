@@ -8,7 +8,9 @@
                 <h5 class="mb-0">Stock Adjustments</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('stock-adjustments.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
-                    <a href="{{ route('stock-adjustments.create') }}" class="btn btn-sm btn-light">+ Add Adjustment</a>
+                    @if(auth()->user()->canEditRecords())
+                        <a href="{{ route('stock-adjustments.create') }}" class="btn btn-sm btn-light">+ Add Adjustment</a>
+                    @endif
                 </div>
             </div>
 

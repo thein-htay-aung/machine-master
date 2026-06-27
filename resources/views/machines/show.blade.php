@@ -116,7 +116,9 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Bill of Materials</h6>
                 <div>
-                    <a href="{{ route('machines.parts.edit', $machine->id) }}" class="btn btn-sm btn-primary">Edit BOM</a>
+                    @if(auth()->user()->canEditRecords())
+                        <a href="{{ route('machines.parts.edit', $machine->id) }}" class="btn btn-sm btn-primary">Edit BOM</a>
+                    @endif
                 </div>
             </div>
             <div class="card-body">

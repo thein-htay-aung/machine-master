@@ -10,7 +10,9 @@
                 <h5 class="mb-0">Categories</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('categories.export') }}" class="btn btn-sm btn-light">Download Excel</a>
-                    <a href="{{ route('categories.create') }}" class="btn btn-sm btn-light">+ Add New Category</a>
+                    @if(auth()->user()->canEditRecords())
+                        <a href="{{ route('categories.create') }}" class="btn btn-sm btn-light">+ Add New Category</a>
+                    @endif
                 </div>
             </div>
 
@@ -72,12 +74,16 @@
                                     <td class="align-middle">{{ $category->updated_at?->format('Y-m-d H:i:s') ?? '-' }}</td>
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                            <a href="{{ route('categories.edit', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
-                                            <form action="{{ route('categories.destroy', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this category?');" class="m-0">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
-                                            </form>
+                                            @if(auth()->user()->canEditRecords())
+                                                <a href="{{ route('categories.edit', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
+                                            @endif
+                                            @if(auth()->user()->canDeleteRecords())
+                                                <form action="{{ route('categories.destroy', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST" onsubmit="return confirm('Delete this category?');" class="m-0">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

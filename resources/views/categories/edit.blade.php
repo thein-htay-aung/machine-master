@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('categories.update', $category->id) }}" method="POST">
+                <form action="{{ route('categories.update', $category->id) }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" method="POST">
                     @csrf
                     @method('PUT')
 

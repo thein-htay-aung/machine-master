@@ -11,10 +11,12 @@
                     <h5 class="mb-0">Machine List</h5>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('machines.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
-                        @if(auth()->user()->isSuperAdmin())
+                        @if(auth()->user()->canEditRecords())
                             <a href="{{ route('machines.import') }}" class="btn btn-sm btn-light">Import Excel</a>
                         @endif
-                        <a href="{{ route('machines.create') }}" class="btn btn-sm btn-light">+ Add New Machine</a>
+                        @if(auth()->user()->canEditRecords())
+                            <a href="{{ route('machines.create') }}" class="btn btn-sm btn-light">+ Add New Machine</a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -117,12 +119,16 @@
                                     <td class="text-center align-middle">
                                         <div class="d-flex justify-content-center gap-2">
                                             <a href="{{ route('machines.show', ['machine' => $machine->id] + request()->query()) }}" class="btn btn-sm p-0 border-0 bg-transparent text-info" title="Detail"><i class="bi bi-eye fs-5"></i></a>
-                                            <a href="{{ route('machines.edit', ['machine' => $machine->id] + request()->query()) }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
-                                            <form action="{{ route('machines.destroy', ['machine' => $machine->id] + request()->query()) }}" method="POST" onsubmit="return confirm('Delete this machine?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
-                                            </form>
+                                            @if(auth()->user()->canEditRecords())
+                                                <a href="{{ route('machines.edit', ['machine' => $machine->id] + request()->query()) }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
+                                            @endif
+                                            @if(auth()->user()->canDeleteRecords())
+                                                <form action="{{ route('machines.destroy', ['machine' => $machine->id] + request()->query()) }}" method="POST" onsubmit="return confirm('Delete this machine?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

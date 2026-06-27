@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Department;
 use App\Models\Plant;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,7 +21,7 @@ class SuperAdminSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('password'),
-                'role_id' => 1,
+                'role_id' => Role::query()->where('name', 'superadmin')->value('id'),
                 'email_verified_at' => now(),
                 'status' => true,
                 'department_id' => Department::query()->where('name', 'System')->value('id'),

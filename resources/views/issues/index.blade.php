@@ -8,7 +8,9 @@
                 <h5 class="mb-0">Issues</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('issues.export', request()->query()) }}" class="btn btn-sm btn-light">Download Excel</a>
-                    <a href="{{ route('issues.create') }}" class="btn btn-sm btn-light">+ Add Issue</a>
+                    @if(auth()->user()->canEditRecords())
+                        <a href="{{ route('issues.create') }}" class="btn btn-sm btn-light">+ Add Issue</a>
+                    @endif
                 </div>
             </div>
 

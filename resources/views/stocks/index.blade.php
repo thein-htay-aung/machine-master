@@ -6,7 +6,9 @@
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Current Stock</h5>
-                <a href="{{ route('purchases.create') }}" class="btn btn-sm btn-light">+ Add Purchase</a>
+                @if(auth()->user()->canEditRecords())
+                    <a href="{{ route('purchases.create') }}" class="btn btn-sm btn-light">+ Add Purchase</a>
+                @endif
             </div>
 
             <div class="card-body">

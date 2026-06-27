@@ -37,7 +37,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::where('name', '!=', 'superadmin')->orderBy('name')->get();
+        $roles = Role::whereIn('name', ['viewer', 'editor', 'admin'])->orderBy('name')->get();
         $departments = Department::where('name', '!=', 'System')->orderBy('name')->get();
         $plants = $this->userSelectablePlants();
         $defaultPlantId = $this->defaultUserPlantId();
@@ -103,7 +103,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $roles = Role::orderBy('name')->get();
+        $roleNames = $user->isSuperAdmin()
+            ? ['viewer', 'editor', 'admin', 'superadmin']
+            : ['viewer', 'editor', 'admin'];
+        $roles = Role::whereIn('name', $roleNames)->orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $plants = $this->userSelectablePlants();
         $defaultPlantId = $this->defaultUserPlantId($user->plant_id);

@@ -73,9 +73,29 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role && $this->role->name === $roleName;
     }
 
+    public function hasAnyRole(array $roleNames): bool
+    {
+        return $this->role && in_array($this->role->name, $roleNames, true);
+    }
+
     public function isSuperAdmin()
     {
         return $this->hasRole('superadmin');
+    }
+
+    public function canEditRecords(): bool
+    {
+        return $this->hasAnyRole(['editor', 'admin', 'superadmin']);
+    }
+
+    public function canDeleteRecords(): bool
+    {
+        return $this->hasAnyRole(['admin', 'superadmin']);
+    }
+
+    public function canManageUsers(): bool
+    {
+        return $this->isSuperAdmin();
     }
 
     public function isEnabled()

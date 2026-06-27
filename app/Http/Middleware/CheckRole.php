@@ -15,12 +15,17 @@ class CheckRole
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
+        $roles = collect($roles)
+            ->flatMap(fn (string $role) => explode(',', $role))
+            ->map(fn (string $role) => trim($role))
+            ->filter()
+            ->all();
 
-        if (!$user || !$user->hasRole($role)) {
+        if (!$user || !$user->hasAnyRole($roles)) {
             abort(403, 'Unauthorized');
         }
 
