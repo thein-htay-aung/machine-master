@@ -24,12 +24,18 @@
                     </div>
                 @endif
 
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <form method="GET" action="{{ route('units.index') }}" class="row gx-3 gy-3 align-items-end mb-3">
                     <div class="col-md-4">
                         <label class="form-label visually-hidden" for="filter-plant">Plant</label>
                         <select id="filter-plant" name="plant_id" class="form-select">
                             @if($plants->count() > 1)
-                                <option value="">All plants</option>
+                                <option value="">All Plants</option>
                             @endif
                             @foreach($plants as $plant)
                                 <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>

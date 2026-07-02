@@ -61,11 +61,11 @@
                                         <div class="d-flex justify-content-center gap-2 flex-wrap">
                                             <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm p-0 border-0 bg-transparent text-info" title="Detail"><i class="bi bi-eye fs-5"></i></a>
                                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm p-0 border-0 bg-transparent text-warning" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
-                                            @if(!$user->isSuperAdmin())
-                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Delete this user?');" class="m-0">
+                                            @if(!$user->isSuperAdmin() && $user->isEnabled())
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Disable this user?');" class="m-0">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Delete"><i class="bi bi-trash fs-5"></i></button>
+                                                    <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger" title="Disable"><i class="bi bi-person-x fs-5"></i></button>
                                                 </form>
                                             @endif
                                         </div>

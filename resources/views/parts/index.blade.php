@@ -24,6 +24,12 @@
                     </div>
                 @endif
 
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <form method="GET" action="{{ route('parts.index') }}" class="row gx-3 gy-3 align-items-end mb-3">
                     <div class="col-md-3">
                         <label class="form-label visually-hidden" for="filter-name">Name</label>

@@ -199,12 +199,12 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Disable the specified user instead of removing audit history.
      */
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted.');
+        $user->update(['status' => false]);
+        return redirect()->route('users.index')->with('success', 'User disabled.');
     }
 
     private function userSelectablePlants()

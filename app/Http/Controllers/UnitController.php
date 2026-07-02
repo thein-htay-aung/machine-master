@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\UnitsExport;
+use App\Models\Part;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -102,6 +103,10 @@ class UnitController extends Controller
      */
     public function destroy(Unit $unit)
     {
+        if (Part::where('unit_id', $unit->id)->exists()) {
+            return redirect()->route('units.index')->with('error', 'This unit is being used by parts and cannot be deleted.');
+        }
+
         $unit->delete();
 
         return redirect()->route('units.index')->with('success', 'Unit deleted successfully.');

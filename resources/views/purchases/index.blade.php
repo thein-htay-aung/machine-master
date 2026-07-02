@@ -39,7 +39,7 @@
                     <div class="col-md-6 col-xl-1">
                         <select name="plant_id" class="form-select">
                             @if($plants->count() > 1)
-                                <option value="">All plants</option>
+                                <option value="">All Plants</option>
                             @endif
                             @foreach($plants as $plant)
                                 <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>

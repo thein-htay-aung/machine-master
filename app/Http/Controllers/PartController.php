@@ -214,6 +214,10 @@ class PartController extends Controller
 
     public function destroy(Request $request, Part $part)
     {
+        if ($part->purchases()->exists() || $part->issues()->exists() || $part->stockAdjustments()->exists()) {
+            return redirect()->route('parts.index', $request->query())->with('error', 'This part is being used by purchase, issue, or stock adjustment records and cannot be deleted.');
+        }
+
         if ($part->image && Storage::disk('public')->exists($part->image)) {
             Storage::disk('public')->delete($part->image);
         }

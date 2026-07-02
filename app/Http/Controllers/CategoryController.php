@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\CategoriesExport;
 use App\Models\Category;
+use App\Models\Part;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -84,6 +85,10 @@ class CategoryController extends Controller
 
     public function destroy(Request $request, Category $category)
     {
+        if (Part::where('category_id', $category->id)->exists()) {
+            return redirect()->route('categories.index', $request->query())->with('error', 'This category is being used by parts and cannot be deleted.');
+        }
+
         $category->delete();
 
         return redirect()->route('categories.index', $request->query())->with('success', 'Category deleted successfully.');
