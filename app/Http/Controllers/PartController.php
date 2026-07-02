@@ -25,7 +25,9 @@ class PartController extends Controller
             ->leftJoin('categories', 'parts.category_id', '=', 'categories.id')
             ->select('parts.*')
             ->orderBy('categories.name')
-            ->orderBy('parts.name');
+            ->orderBy('parts.name')
+            ->orderBy('parts.brand')
+            ->orderBy('parts.model');
 
         $name = $request->query('name', null);
         $plantId = $request->query('plant_id', null);
@@ -74,12 +76,18 @@ class PartController extends Controller
     {
         $q = $request->query('q', null);
 
-        $query = Part::with(['category', 'plant', 'unit'])->orderBy('name');
+        $query = Part::with(['category', 'plant', 'unit'])
+            ->leftJoin('categories', 'parts.category_id', '=', 'categories.id')
+            ->select('parts.*')
+            ->orderBy('categories.name')
+            ->orderBy('parts.name')
+            ->orderBy('parts.brand')
+            ->orderBy('parts.model');
 
         if ($q !== null && $q !== '') {
             $query->where(function ($builder) use ($q) {
-                $builder->where('name', 'like', '%' . $q . '%')
-                        ->orWhere('model', 'like', '%' . $q . '%');
+                $builder->where('parts.name', 'like', '%' . $q . '%')
+                        ->orWhere('parts.model', 'like', '%' . $q . '%');
             });
         }
 

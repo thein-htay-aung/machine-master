@@ -19,7 +19,13 @@ class StockController extends Controller
     {
         $query = CurrentStock::with(['item.category', 'item.plant', 'item.unit'])
             ->whereHas('item')
-            ->orderByDesc('qty');
+            ->join('parts', 'current_stocks.item_id', '=', 'parts.id')
+            ->leftJoin('categories', 'parts.category_id', '=', 'categories.id')
+            ->select('current_stocks.*')
+            ->orderBy('categories.name')
+            ->orderBy('parts.name')
+            ->orderBy('parts.brand')
+            ->orderBy('parts.model');
 
         $name = $request->query('name');
         $categoryId = $request->query('category_id');
