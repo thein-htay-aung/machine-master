@@ -85,7 +85,7 @@ class IssueController extends Controller
         $plants = $this->selectablePlants();
         $selectablePlantIds = $plants->pluck('id')->all();
         $defaultPlantId = $this->defaultPlantId();
-        $categories = Category::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
         $parts = Part::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
 
         return view('issues.create', compact('categories', 'parts', 'plants', 'defaultPlantId'));
@@ -103,7 +103,7 @@ class IssueController extends Controller
             'items' => 'required|array|min:1',
             'items.*.category_id' => [
                 'nullable',
-                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+                Rule::exists('categories', 'id'),
             ],
             'items.*.part_id' => [
                 'required',

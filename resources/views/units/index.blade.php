@@ -30,37 +30,12 @@
                     </div>
                 @endif
 
-                <form method="GET" action="{{ route('units.index') }}" class="row gx-3 gy-3 align-items-end mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label visually-hidden" for="filter-plant">Plant</label>
-                        <select id="filter-plant" name="plant_id" class="form-select">
-                            @if($plants->count() > 1)
-                                <option value="">All Plants</option>
-                            @endif
-                            @foreach($plants as $plant)
-                                <option value="{{ $plant->id }}" {{ request('plant_id', $defaultPlantId) == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row gx-2">
-                            <div class="col-6">
-                                <button type="submit" class="btn btn-primary w-100">Filter</button>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ route('units.index') }}" class="btn btn-secondary w-100">Reset</a>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered">
                         <thead class="table-success">
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
-                                <th scope="col" class="text-center">Plant</th>
                                 <th scope="col">Created By</th>
                                 <th scope="col">Created At</th>
                                 <th scope="col">Updated By</th>
@@ -73,7 +48,6 @@
                                 <tr>
                                     <td class="text-center align-middle">{{ $units->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $unit->name }}</td>
-                                    <td class="text-center align-middle">{{ $unit->plant?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $unit->createdBy?->name ?? 'System' }}</td>
                                     <td class="align-middle">{{ $unit->created_at?->format('Y-m-d H:i:s') ?? '-' }}</td>
                                     <td class="align-middle">{{ $unit->updatedBy?->name ?? 'System' }}</td>
@@ -95,7 +69,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No units found.</td>
+                                    <td colspan="7" class="text-center">No units found.</td>
                                 </tr>
                             @endforelse
 

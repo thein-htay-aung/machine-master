@@ -84,7 +84,7 @@
                                             <select name="items[{{ $index }}][category_id]" class="form-select item-category @error('items.' . $index . '.category_id') is-invalid @enderror">
                                                 <option value="">All categories</option>
                                                 @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}" data-plant-id="{{ $category->plant_id }}" {{ ($item['category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                    <option value="{{ $category->id }}" {{ ($item['category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('items.' . $index . '.category_id')
@@ -144,7 +144,7 @@
                 <select name="items[__INDEX__][category_id]" class="form-select item-category">
                     <option value="">All categories</option>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" data-plant-id="{{ $category->plant_id }}">{{ $category->name }}</option>
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
             </td>
@@ -184,24 +184,8 @@
         let nextItemIndex = {{ count($oldItems) }};
 
         function filterCategoryOptions(row) {
-            const plantId = plantSelect?.value || '';
             const categorySelect = row.querySelector('.item-category');
-            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
-
-            Array.from(categorySelect.options).forEach((option) => {
-                if (!option.value) {
-                    option.hidden = false;
-                    return;
-                }
-
-                option.hidden = plantId === '' || option.dataset.plantId !== plantId;
-            });
-
-            if (selectedOption && selectedOption.value && selectedOption.hidden) {
-                categorySelect.value = '';
-            }
-
-            categorySelect.disabled = plantId === '';
+            categorySelect.disabled = false;
         }
 
         function filterPartOptions(row) {

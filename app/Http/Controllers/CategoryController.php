@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\CategoriesExport;
 use App\Models\Category;
 use App\Models\Part;
@@ -11,26 +10,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
-    use ResolvesPlantOptions;
-
-    public function index(Request $request)
+    public function index()
     {
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId();
-        $plantId = $request->query('plant_id');
-        $selectablePlantIds = $plants->pluck('id')->all();
+        $categories = Category::with(['createdBy', 'updatedBy'])->orderBy('name')->paginate(10);
 
-        $query = Category::with(['plant', 'createdBy', 'updatedBy'])->orderBy('name');
-
-        if ($plantId !== null && $plantId !== '' && in_array((int) $plantId, $selectablePlantIds, true)) {
-            $query->where('plant_id', $plantId);
-        } elseif ($defaultPlantId) {
-            $query->where('plant_id', $defaultPlantId);
-        }
-
-        $categories = $query->paginate(10)->withQueryString();
-
-        return view('categories.index', compact('categories', 'plants', 'defaultPlantId'));
+        return view('categories.index', compact('categories'));
     }
 
     public function export()
@@ -40,17 +24,13 @@ class CategoryController extends Controller
 
     public function create()
     {
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId();
-
-        return view('categories.create', compact('plants', 'defaultPlantId'));
+        return view('categories.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'plant_id' => ['required', $this->plantValidationRule()],
         ]);
 
         $validated['created_by'] = $request->user()->id;
@@ -63,17 +43,13 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId($category->plant_id);
-
-        return view('categories.edit', compact('category', 'plants', 'defaultPlantId'));
+        return view('categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'plant_id' => ['required', $this->plantValidationRule()],
         ]);
 
         $validated['updated_by'] = $request->user()->id;

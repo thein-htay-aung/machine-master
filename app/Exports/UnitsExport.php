@@ -11,19 +11,18 @@ class UnitsExport implements FromCollection, WithHeadings, WithMapping
 {
     public function collection()
     {
-        return Unit::with(['plant', 'createdBy', 'updatedBy'])->orderBy('name')->get();
+        return Unit::with(['createdBy', 'updatedBy'])->orderBy('name')->get();
     }
 
     public function headings(): array
     {
-        return ['Name', 'Plant', 'Created By', 'Created At', 'Updated By', 'Updated At'];
+        return ['Name', 'Created By', 'Created At', 'Updated By', 'Updated At'];
     }
 
     public function map($unit): array
     {
         return [
             $unit->name,
-            $unit->plant?->name,
             $unit->createdBy?->name ?? 'System',
             $unit->created_at?->format('Y-m-d H:i:s'),
             $unit->updatedBy?->name ?? 'System',

@@ -35,7 +35,7 @@ trait ResolvesPlantOptions
 
     protected function selectableCategories()
     {
-        return Category::whereIn('plant_id', $this->selectablePlantIds())->orderBy('name')->get();
+        return Category::orderBy('name')->get();
     }
 
     protected function defaultPlantId(?int $currentPlantId = null): ?int

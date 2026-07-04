@@ -72,10 +72,10 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Category</label>
-                            <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" data-plant-dependent-select required>
+                            <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
                                 <option value="">Select category</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}" data-plant-id="{{ $category->plant_id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                 @endforeach
                             </select>
                             @error('category_id')
@@ -85,10 +85,10 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Unit</label>
-                            <select name="unit_id" class="form-select @error('unit_id') is-invalid @enderror" data-plant-dependent-select required>
+                            <select name="unit_id" class="form-select @error('unit_id') is-invalid @enderror" required>
                                 <option value="">Select unit</option>
                                 @foreach ($units as $unit)
-                                    <option value="{{ $unit->id }}" data-plant-id="{{ $unit->plant_id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
+                                    <option value="{{ $unit->id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
                                 @endforeach
                             </select>
                             @error('unit_id')
@@ -131,46 +131,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const plantSelect = document.querySelector('[data-part-plant-select]');
-            const dependentSelects = document.querySelectorAll('[data-plant-dependent-select]');
-
-            if (!plantSelect) {
-                return;
-            }
-
-            const filterOptions = () => {
-                const plantId = plantSelect.value;
-
-                dependentSelects.forEach((select) => {
-                    let selectedOptionIsVisible = false;
-
-                    Array.from(select.options).forEach((option) => {
-                        if (!option.value) {
-                            option.hidden = false;
-                            return;
-                        }
-
-                        const isVisible = plantId !== '' && option.dataset.plantId === plantId;
-                        option.hidden = !isVisible;
-
-                        if (option.selected && isVisible) {
-                            selectedOptionIsVisible = true;
-                        }
-                    });
-
-                    if (!selectedOptionIsVisible) {
-                        select.value = '';
-                    }
-
-                    select.disabled = plantId === '';
-                });
-            };
-
-            plantSelect.addEventListener('change', filterOptions);
-            filterOptions();
-        });
-    </script>
-@endpush

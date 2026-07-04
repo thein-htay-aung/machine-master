@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\ResolvesPlantOptions;
 use App\Exports\UnitsExport;
 use App\Models\Part;
 use App\Models\Unit;
@@ -11,29 +10,14 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class UnitController extends Controller
 {
-    use ResolvesPlantOptions;
-
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId();
-        $plantId = $request->query('plant_id');
-        $selectablePlantIds = $plants->pluck('id')->all();
+        $units = Unit::with(['createdBy', 'updatedBy'])->orderBy('name')->paginate(10);
 
-        $query = Unit::with(['plant', 'createdBy', 'updatedBy'])->orderBy('name');
-
-        if ($plantId !== null && $plantId !== '' && in_array((int) $plantId, $selectablePlantIds, true)) {
-            $query->where('plant_id', $plantId);
-        } elseif ($defaultPlantId) {
-            $query->where('plant_id', $defaultPlantId);
-        }
-
-        $units = $query->paginate(10)->withQueryString();
-
-        return view('units.index', compact('units', 'plants', 'defaultPlantId'));
+        return view('units.index', compact('units'));
     }
 
     public function export()
@@ -46,10 +30,7 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId();
-
-        return view('units.create', compact('plants', 'defaultPlantId'));
+        return view('units.create');
     }
 
     /**
@@ -59,7 +40,6 @@ class UnitController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:units,name',
-            'plant_id' => ['required', $this->plantValidationRule()],
         ]);
 
         $validated['created_by'] = $request->user()->id;
@@ -75,10 +55,7 @@ class UnitController extends Controller
      */
     public function edit(Unit $unit)
     {
-        $plants = $this->selectablePlants();
-        $defaultPlantId = $this->defaultPlantId($unit->plant_id);
-
-        return view('units.edit', compact('unit', 'plants', 'defaultPlantId'));
+        return view('units.edit', compact('unit'));
     }
 
     /**
@@ -88,7 +65,6 @@ class UnitController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:units,name,' . $unit->id,
-            'plant_id' => ['required', $this->plantValidationRule()],
         ]);
 
         $validated['updated_by'] = $request->user()->id;

@@ -7,7 +7,6 @@ use App\Exports\PartsExport;
 use App\Models\CurrentStock;
 use App\Models\Part;
 use App\Models\Category;
-use App\Models\Plant;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -106,9 +105,8 @@ class PartController extends Controller
     public function create()
     {
         $plants = $this->selectablePlants();
-        $selectablePlantIds = $plants->pluck('id')->all();
-        $categories = Category::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
-        $units = Unit::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+        $units = Unit::orderBy('name')->get();
         $defaultPlantId = $this->defaultPlantId();
 
         return view('parts.create', compact('categories', 'plants', 'units', 'defaultPlantId'));
@@ -124,12 +122,12 @@ class PartController extends Controller
             'plant_id' => ['required', $this->plantValidationRule()],
             'category_id' => [
                 'required',
-                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+                Rule::exists('categories', 'id'),
             ],
             'is_active' => 'sometimes|boolean',
             'unit_id' => [
                 'required',
-                Rule::exists('units', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+                Rule::exists('units', 'id'),
             ],
             'min_qty' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
@@ -167,9 +165,8 @@ class PartController extends Controller
     public function edit(Part $part)
     {
         $plants = $this->selectablePlants();
-        $selectablePlantIds = $plants->pluck('id')->all();
-        $categories = Category::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
-        $units = Unit::whereIn('plant_id', $selectablePlantIds)->orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+        $units = Unit::orderBy('name')->get();
         $defaultPlantId = $this->defaultPlantId($part->plant_id);
 
         return view('parts.edit', compact('part', 'categories', 'plants', 'units', 'defaultPlantId'));
@@ -185,12 +182,12 @@ class PartController extends Controller
             'plant_id' => ['required', $this->plantValidationRule()],
             'category_id' => [
                 'required',
-                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+                Rule::exists('categories', 'id'),
             ],
             'is_active' => 'sometimes|boolean',
             'unit_id' => [
                 'required',
-                Rule::exists('units', 'id')->where(fn ($query) => $query->where('plant_id', $request->input('plant_id'))),
+                Rule::exists('units', 'id'),
             ],
             'min_qty' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
