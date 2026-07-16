@@ -23,7 +23,7 @@ class PurchaseController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Purchase::with(['part', 'plant', 'createdBy'])->latest('created_at');
+        $query = Purchase::with(['part.category', 'plant', 'createdBy'])->latest('created_at');
 
         $invoice = $request->query('invoice');
         $partName = $request->query('part_name');

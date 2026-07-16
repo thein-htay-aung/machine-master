@@ -68,12 +68,13 @@
                                 <th scope="col">Issue No</th>
                                 <th scope="col">Part Name</th>
                                 <th scope="col">Brand</th>
+                                <th scope="col">Category</th>
                                 <th scope="col">Model</th>
                                 <th scope="col" class="text-end">Qty</th>
                                 <th scope="col" class="text-end">Price</th>
                                 <th scope="col" class="text-end">Amount</th>
                                 <th scope="col">Remark</th>
-                                <th scope="col">Issued Date</th>
+                                <th scope="col" class="text-center">Issued Date</th>
                                 <th scope="col">Issue By</th>
                                 <th scope="col">Created By</th>
                                 <th scope="col">Created At</th>
@@ -86,19 +87,20 @@
                                     <td class="align-middle">{{ $issue->issue_no }}</td>
                                     <td class="align-middle">{{ $issue->part?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->part?->brand ?? '-' }}</td>
+                                    <td class="align-middle">{{ $issue->part?->category?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->part?->model ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->qty) }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->price) }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->amount) }}</td>
                                     <td class="align-middle">{{ $issue->remark ?? '-' }}</td>
-                                    <td class="align-middle">{{ $issue->issued_date?->format('Y-m-d') ?? '-' }}</td>
+                                    <td class="text-center align-middle">{{ $issue->issued_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->issue_by }}</td>
                                     <td class="align-middle">{{ $issue->createdBy?->name ?? 'System' }}</td>
                                     <td class="align-middle">{{ $issue->created_at?->format('Y-m-d H:i:s') ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="13" class="text-center">No issues found.</td>
+                                    <td colspan="14" class="text-center">No issues found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

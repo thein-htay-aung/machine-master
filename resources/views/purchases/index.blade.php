@@ -66,14 +66,15 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Invoice</th>
-                                <th scope="col">Par Name</th>
+                                <th scope="col">Part Name</th>
                                 <th scope="col">Brand</th>
+                                <th scope="col">Category</th>
                                 <th scope="col">Model</th>
                                 <th scope="col" class="text-end">Price</th>
                                 <th scope="col" class="text-end">Qty</th>
                                 <th scope="col" class="text-end">Amount</th>
                                 <th scope="col">Remark</th>
-                                <th scope="col">Purchased Date</th>
+                                <th scope="col" class="text-center">Purchased Date</th>
                                 <th scope="col">Purchase By</th>
                                 <th scope="col">Created By</th>
                                 <th scope="col">Created At</th>
@@ -86,19 +87,20 @@
                                     <td class="align-middle">{{ $purchase->invoice }}</td>
                                     <td class="align-middle">{{ $purchase->part?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->part?->brand ?? '-' }}</td>
+                                    <td class="align-middle">{{ $purchase->part?->category?->name ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->part?->model ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->price) }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->qty) }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->amount) }}</td>
                                     <td class="align-middle">{{ $purchase->remark ?? '-' }}</td>
-                                    <td class="align-middle">{{ $purchase->purchased_date?->format('Y-m-d') ?? '-' }}</td>
+                                    <td class="text-center align-middle">{{ $purchase->purchased_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->purchase_by ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->createdBy?->name ?? 'System' }}</td>
                                     <td class="align-middle">{{ $purchase->created_at?->format('Y-m-d H:i:s') ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="13" class="text-center">No purchases found.</td>
+                                    <td colspan="14" class="text-center">No purchases found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

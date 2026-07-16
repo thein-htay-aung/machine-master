@@ -10,6 +10,15 @@
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+    <script>
+        try {
+            if (localStorage.getItem('machine-master.sidebar.hidden') === 'true') {
+                document.documentElement.classList.add('sidebar-hidden');
+            }
+        } catch (error) {
+            document.documentElement.classList.remove('sidebar-hidden');
+        }
+    </script>
     <style>
         .app-logo {
             width: 32px;
@@ -62,11 +71,13 @@
                 overflow-y: auto;
             }
 
-            body.sidebar-hidden #sidebarMenu {
+            body.sidebar-hidden #sidebarMenu,
+            html.sidebar-hidden #sidebarMenu {
                 display: none !important;
             }
 
-            body.sidebar-hidden #appMain {
+            body.sidebar-hidden #appMain,
+            html.sidebar-hidden #appMain {
                 flex: 0 0 auto;
                 width: 100%;
             }
@@ -313,6 +324,7 @@
                 var toggle = document.getElementById('sidebarToggle');
                 var closeButtons = document.querySelectorAll('.sidebar-close-btn, #sidebarBackdrop');
                 var desktopQuery = window.matchMedia('(min-width: 992px)');
+                var sidebarStorageKey = 'machine-master.sidebar.hidden';
 
                 if (!sidebar || !toggle) {
                     return;
@@ -330,13 +342,36 @@
                     toggle.querySelector('i').className = isOpen ? 'bi bi-x-lg small' : 'bi bi-list fs-5';
                 }
 
+                function sidebarIsHidden() {
+                    try {
+                        return localStorage.getItem(sidebarStorageKey) === 'true';
+                    } catch (error) {
+                        return document.documentElement.classList.contains('sidebar-hidden');
+                    }
+                }
+
+                function rememberSidebarHidden(isHidden) {
+                    try {
+                        localStorage.setItem(sidebarStorageKey, isHidden ? 'true' : 'false');
+                    } catch (error) {
+                        // Keep the UI working even when browser storage is unavailable.
+                    }
+                }
+
+                function applySidebarHidden(isHidden) {
+                    document.documentElement.classList.toggle('sidebar-hidden', isHidden);
+                    document.body.classList.toggle('sidebar-hidden', isHidden);
+                    setToggleState(!isHidden);
+                }
+
                 function syncForViewport() {
                     if (isDesktop()) {
+                        var isHidden = sidebarIsHidden();
                         sidebar.classList.add('show');
-                        document.body.classList.remove('sidebar-hidden');
-                        setToggleState(true);
+                        applySidebarHidden(isHidden);
                     } else {
                         sidebar.classList.remove('show');
+                        document.documentElement.classList.remove('sidebar-hidden');
                         document.body.classList.remove('sidebar-hidden');
                         setToggleState(false);
                     }
@@ -345,8 +380,8 @@
                 toggle.addEventListener('click', function () {
                     if (isDesktop()) {
                         var willHide = !document.body.classList.contains('sidebar-hidden');
-                        document.body.classList.toggle('sidebar-hidden', willHide);
-                        setToggleState(!willHide);
+                        rememberSidebarHidden(willHide);
+                        applySidebarHidden(willHide);
                     } else {
                         sidebarCollapse.toggle();
                     }
@@ -355,8 +390,8 @@
                 closeButtons.forEach(function (button) {
                     button.addEventListener('click', function () {
                         if (isDesktop()) {
-                            document.body.classList.add('sidebar-hidden');
-                            setToggleState(false);
+                            rememberSidebarHidden(true);
+                            applySidebarHidden(true);
                         } else {
                             sidebarCollapse.hide();
                         }

@@ -24,7 +24,7 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Issue::with(['part', 'plant', 'createdBy'])->latest('created_at');
+        $query = Issue::with(['part.category', 'plant', 'createdBy'])->latest('created_at');
 
         $issueNo = $request->query('issue_no');
         $partName = $request->query('part_name');

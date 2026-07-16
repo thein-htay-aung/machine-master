@@ -24,7 +24,7 @@ class StockAdjustmentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = StockAdjustment::with(['part', 'plant', 'createdBy'])->latest('created_at');
+        $query = StockAdjustment::with(['part.category', 'plant', 'createdBy'])->latest('created_at');
 
         $adjustmentNo = $request->query('adjustment_no');
         $partName = $request->query('part_name');
