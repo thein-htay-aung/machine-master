@@ -223,11 +223,16 @@ class PartController extends Controller
             return redirect()->route('parts.index', $request->query())->with('error', 'This part is being used by purchase, issue, or stock adjustment records and cannot be deleted.');
         }
 
-        if ($part->image && Storage::disk('public')->exists($part->image)) {
-            Storage::disk('public')->delete($part->image);
-        }
+        $image = $part->image;
 
-        $part->delete();
+        DB::transaction(function () use ($part) {
+            $part->currentStock()->delete();
+            $part->delete();
+        });
+
+        if ($image && Storage::disk('public')->exists($image)) {
+            Storage::disk('public')->delete($image);
+        }
 
         return redirect()->route('parts.index', $request->query())->with('success', 'Part deleted successfully.');
     }
