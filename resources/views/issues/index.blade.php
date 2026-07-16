@@ -67,9 +67,9 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Issue No</th>
                                 <th scope="col">Part Name</th>
+                                <th scope="col">Model</th>
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
-                                <th scope="col">Model</th>
                                 <th scope="col" class="text-end">Qty</th>
                                 <th scope="col" class="text-end">Price</th>
                                 <th scope="col" class="text-end">Amount</th>
@@ -86,9 +86,9 @@
                                     <td class="text-center align-middle">{{ $issues->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $issue->issue_no }}</td>
                                     <td class="align-middle">{{ $issue->part?->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $issue->part?->model ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->part?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $issue->part?->category?->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $issue->part?->model ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->qty) }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->price) }}</td>
                                     <td class="text-end align-middle">{{ number_format($issue->amount) }}</td>

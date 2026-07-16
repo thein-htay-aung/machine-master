@@ -67,9 +67,9 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Adjustment No</th>
                                 <th scope="col">Part Name</th>
+                                <th scope="col">Model</th>
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
-                                <th scope="col">Model</th>
                                 <th scope="col" class="text-center">Symbol</th>
                                 <th scope="col" class="text-end">Qty</th>
                                 <th scope="col" class="text-end">Price</th>
@@ -87,9 +87,9 @@
                                     <td class="text-center align-middle">{{ $adjustments->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $adjustment->adjustment_no }}</td>
                                     <td class="align-middle">{{ $adjustment->part?->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $adjustment->part?->model ?? '-' }}</td>
                                     <td class="align-middle">{{ $adjustment->part?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $adjustment->part?->category?->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $adjustment->part?->model ?? '-' }}</td>
                                     <td class="text-center align-middle">
                                         <span class="badge {{ $adjustment->symbol === '+' ? 'bg-success' : 'bg-danger' }}">{{ $adjustment->symbol }}</span>
                                     </td>

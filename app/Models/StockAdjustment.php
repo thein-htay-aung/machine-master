@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Category;
 
 class StockAdjustment extends Model
 {
@@ -28,11 +27,6 @@ class StockAdjustment extends Model
         'amount' => 'decimal:2',
         'adjusted_date' => 'date',
     ];
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     public function part()
     {

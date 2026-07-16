@@ -67,9 +67,9 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Invoice</th>
                                 <th scope="col">Part Name</th>
+                                <th scope="col">Model</th>
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
-                                <th scope="col">Model</th>
                                 <th scope="col" class="text-end">Price</th>
                                 <th scope="col" class="text-end">Qty</th>
                                 <th scope="col" class="text-end">Amount</th>
@@ -86,9 +86,9 @@
                                     <td class="text-center align-middle">{{ $purchases->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $purchase->invoice }}</td>
                                     <td class="align-middle">{{ $purchase->part?->name ?? '-' }}</td>
+                                    <td class="align-middle">{{ $purchase->part?->model ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->part?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $purchase->part?->category?->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $purchase->part?->model ?? '-' }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->price) }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->qty) }}</td>
                                     <td class="text-end align-middle">{{ number_format($purchase->amount) }}</td>

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Category;
 
 class Purchase extends Model
 {
@@ -27,11 +26,6 @@ class Purchase extends Model
         'amount' => 'decimal:2',
         'purchased_date' => 'date',
     ];
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     public function part()
     {
