@@ -82,7 +82,8 @@
                                 <th scope="col">Name</th>
                                 <th scope="col">Model</th>
                                 <th scope="col">Brand</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Category</th>
+                                <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Plant</th>
                                 <th scope="col">Location</th>
                                 <th class="text-center">Actions</th>
@@ -99,7 +100,8 @@
                                     <td class="align-middle">{{ $machine->name }}</td>
                                     <td class="align-middle">{{ $machine->model }}</td>
                                     <td class="align-middle">{{ $machine->brand }}</td>
-                                    <td class="align-middle">
+                                    <td class="align-middle">{{ $machine->category ?? '-' }}</td>
+                                    <td class="text-center align-middle">
                                         @if($machine->status)
                                             @php
                                                 $badgeClass = match($machine->status->name) {
@@ -134,7 +136,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">No machines found.</td>
+                                    <td colspan="10" class="text-center">No machines found.</td>
                                 </tr>
                             @endforelse
 
