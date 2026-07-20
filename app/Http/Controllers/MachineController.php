@@ -22,8 +22,8 @@ class MachineController extends Controller
 {
     use ResolvesPlantOptions;
 
-    private const IMPORT_CURRENCIES = ['MMK', 'USD', 'SGD', 'JPY', 'CNY'];
-    private const MACHINE_CATEGORIES = ['Production', 'Facility', 'Measurement', 'General'];
+    private const IMPORT_CURRENCIES = ['MMK', 'USD', 'SGD', 'JPY', 'CNY', 'THB'];
+    private const MACHINE_CATEGORIES = ['Production', 'Facility', 'Measurement', 'General', 'Hand Tool'];
     /**
      * Display a listing of the resource.
      */
