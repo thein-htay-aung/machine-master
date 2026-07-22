@@ -33,6 +33,7 @@ class MachineController extends Controller
         $name = $request->input('name');
         $status_id = $request->input('status_id');
         $plant_id = $request->input('plant_id');
+        $category = $request->input('category');
 
         $query = Machine::with(['plant', 'status']);
 
@@ -46,6 +47,10 @@ class MachineController extends Controller
 
         if ($status_id) {
             $query->where('status_id', $status_id);
+        }
+
+        if ($category) {
+            $query->where('category', $category);
         }
 
         $plants = $this->selectablePlants();
@@ -62,8 +67,9 @@ class MachineController extends Controller
         $machines = $query->orderBy('control_no')->paginate(10)->withQueryString();
 
         $statuses = Status::orderBy('name')->get();
+        $categories = self::MACHINE_CATEGORIES;
 
-        return view('machines.index', compact('machines', 'plants', 'statuses', 'defaultPlantId'));
+        return view('machines.index', compact('machines', 'plants', 'statuses', 'categories', 'defaultPlantId'));
     }
 
     public function export(Request $request)

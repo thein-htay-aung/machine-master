@@ -35,7 +35,7 @@
                             <label class="form-label visually-hidden" for="filter-control_no">Control No.</label>
                             <input id="filter-control_no" type="text" name="control_no" value="{{ request('control_no') }}" class="form-control" placeholder="Control No.">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label visually-hidden" for="filter-name">Name</label>
                             <input id="filter-name" type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Name">
                         </div>
@@ -59,14 +59,19 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <div class="row gx-2">
-                                <div class="col-6">
-                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
-                                </div>
-                                <div class="col-6">
-                                    <a href="{{ route('machines.index') }}" class="btn btn-secondary w-100">Clear</a>
-                                </div>
+                        <div class="col-md-2">
+                            <label class="form-label visually-hidden" for="filter-category">Category</label>
+                            <select id="filter-category" name="category" class="form-select">
+                                <option value="">All Categories</option>
+                                @foreach($categories as $categoryOption)
+                                    <option value="{{ $categoryOption }}" {{ request('category') == $categoryOption ? 'selected' : '' }}>{{ $categoryOption }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
+                                <a href="{{ route('machines.index') }}" class="btn btn-secondary flex-grow-1">Clear</a>
                             </div>
                         </div>
                     </form>
