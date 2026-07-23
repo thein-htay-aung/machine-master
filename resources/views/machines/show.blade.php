@@ -25,12 +25,12 @@
                                 <td>{{ $machine->name }}</td>
                             </tr>
                             <tr>
-                                <th>Brand</th>
-                                <td>{{ $machine->brand ?? '-' }}</td>
-                            </tr>
-                            <tr>
                                 <th>Model</th>
                                 <td>{{ $machine->model ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Brand</th>
+                                <td>{{ $machine->brand ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Serial No.</th>
