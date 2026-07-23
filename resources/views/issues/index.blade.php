@@ -54,8 +54,8 @@
                     </div>
                     <div class="col-md-6 col-xl-1">
                         <div class="d-flex gap-1">
-                            <button type="submit" class="btn btn-primary btn-sm flex-fill">Filter</button>
-                            <a href="{{ route('issues.index') }}" class="btn btn-secondary btn-sm flex-fill">Reset</a>
+                            <button type="submit" class="btn btn-primary btn flex-fill">Filter</button>
+                            <a href="{{ route('issues.index') }}" class="btn btn-secondary btn flex-fill">Reset</a>
                         </div>
                     </div>
                 </form>

@@ -7,7 +7,19 @@
                 <h4 class="mb-1">Dashboard</h4>
                 <p class="text-muted mb-0">Stock, parts, and machine overview for {{ now()->format('Y-m-d') }}.</p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2 align-items-end">
+                <form method="GET" action="{{ route('dashboard') }}" class="d-flex gap-2">
+                    <label class="visually-hidden" for="dashboard-plant">Plant</label>
+                    <select id="dashboard-plant" name="plant_id" class="form-select form-select-sm">
+                        @if($plants->count() > 1)
+                            <option value="">All Plants</option>
+                        @endif
+                        @foreach($plants as $plant)
+                            <option value="{{ $plant->id }}" {{ $selectedPlantId == $plant->id ? 'selected' : '' }}>{{ $plant->name }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">View</button>
+                </form>
                 <a href="{{ route('purchases.create') }}" class="btn btn-sm btn-primary">+ Purchase</a>
                 <a href="{{ route('issues.create') }}" class="btn btn-sm btn-outline-primary">+ Issue</a>
                 <a href="{{ route('stock-adjustments.create') }}" class="btn btn-sm btn-outline-secondary">+ Adjustment</a>

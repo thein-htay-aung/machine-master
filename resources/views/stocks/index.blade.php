@@ -71,8 +71,8 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Part Name</th>
-                                <th scope="col">Brand</th>
                                 <th scope="col">Model</th>
+                                <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
                                 <th scope="col" class="text-center">Plant</th>
                                 <th scope="col" class="text-center">Unit</th>
@@ -94,8 +94,8 @@
                                 <tr>
                                     <td class="text-center align-middle">{{ $stocks->firstItem() + $loop->index }}</td>
                                     <td class="align-middle">{{ $stock->item?->name ?? '-' }}</td>
-                                    <td class="align-middle">{{ $stock->item?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $stock->item?->model ?? '-' }}</td>
+                                    <td class="align-middle">{{ $stock->item?->brand ?? '-' }}</td>
                                     <td class="align-middle">{{ $stock->item?->category?->name ?? '-' }}</td>
                                     <td class="text-center align-middle">{{ $stock->item?->plant?->name ?? '-' }}</td>
                                     <td class="text-center align-middle">{{ $stock->item?->unit?->name ?? '-' }}</td>

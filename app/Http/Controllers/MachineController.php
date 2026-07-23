@@ -64,7 +64,11 @@ class MachineController extends Controller
             $query->where('plant_id', $defaultPlantId);
         }
 
-        $machines = $query->orderBy('control_no')->paginate(10)->withQueryString();
+        $machines = $query
+                        ->orderBy('category')
+                        ->orderBy('control_no')
+                        ->paginate(10)
+                        ->withQueryString();
 
         $statuses = Status::orderBy('name')->get();
         $categories = self::MACHINE_CATEGORIES;
@@ -216,41 +220,59 @@ class MachineController extends Controller
         return redirect()->route('machines.index', $request->query())->with('info', 'Machine deleted successfully.');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        $totalMachines = Machine::count();
-        $totalParts = Part::count();
-        $currentStockQty = CurrentStock::sum('qty');
+        $plants = $this->selectablePlants();
+        $defaultPlantId = $this->defaultPlantId();
+        $selectablePlantIds = $plants->pluck('id')->all();
+        $requestedPlantId = $request->input('plant_id');
+        $selectedPlantId = null;
+
+        if ($requestedPlantId && in_array((int) $requestedPlantId, $selectablePlantIds, true)) {
+            $selectedPlantId = (int) $requestedPlantId;
+        } elseif ($defaultPlantId) {
+            $selectedPlantId = $defaultPlantId;
+        }
+
+        $plantIds = $selectedPlantId ? [$selectedPlantId] : $selectablePlantIds;
+
+        $totalMachines = Machine::whereIn('plant_id', $plantIds)->count();
+        $totalParts = Part::whereIn('plant_id', $plantIds)->count();
+        $currentStockQty = CurrentStock::whereHas('item', function ($query) use ($plantIds) {
+            $query->whereIn('plant_id', $plantIds);
+        })->sum('qty');
         $lowStockCount = CurrentStock::join('parts', 'current_stocks.item_id', '=', 'parts.id')
+            ->whereIn('parts.plant_id', $plantIds)
             ->whereNotNull('parts.min_qty')
             ->whereColumn('current_stocks.qty', '<=', 'parts.min_qty')
             ->count();
 
         $today = now()->toDateString();
-        $todayPurchaseQty = Purchase::whereDate('purchased_date', $today)->sum('qty');
-        $todayIssueQty = Issue::whereDate('issued_date', $today)->sum('qty');
-        $todayAdjustmentInQty = StockAdjustment::whereDate('adjusted_date', $today)->where('symbol', '+')->sum('qty');
-        $todayAdjustmentOutQty = StockAdjustment::whereDate('adjusted_date', $today)->where('symbol', '-')->sum('qty');
+        $todayPurchaseQty = Purchase::whereIn('plant_id', $plantIds)->whereDate('purchased_date', $today)->sum('qty');
+        $todayIssueQty = Issue::whereIn('plant_id', $plantIds)->whereDate('issued_date', $today)->sum('qty');
+        $todayAdjustmentInQty = StockAdjustment::whereIn('plant_id', $plantIds)->whereDate('adjusted_date', $today)->where('symbol', '+')->sum('qty');
+        $todayAdjustmentOutQty = StockAdjustment::whereIn('plant_id', $plantIds)->whereDate('adjusted_date', $today)->where('symbol', '-')->sum('qty');
 
-        $machinesByStatus = Machine::with('status')->get()->groupBy('status.name')->map(function ($group) {
+        $machinesByStatus = Machine::whereIn('plant_id', $plantIds)->with('status')->get()->groupBy('status.name')->map(function ($group) {
             return $group->count();
         });
-        $machinesByPlant = Machine::with('plant')->get()->groupBy('plant.name')->map(function ($group) {
+        $machinesByPlant = Machine::whereIn('plant_id', $plantIds)->with('plant')->get()->groupBy('plant.name')->map(function ($group) {
             return $group->count();
         });
-        $fixedAssetsCount = Machine::where('is_fixed_asset', true)->count();
-        $recentMachines = Machine::with(['plant', 'status'])->orderBy('created_at', 'desc')->limit(5)->get();
+        $fixedAssetsCount = Machine::whereIn('plant_id', $plantIds)->where('is_fixed_asset', true)->count();
+        $recentMachines = Machine::whereIn('plant_id', $plantIds)->with(['plant', 'status'])->orderBy('created_at', 'desc')->limit(5)->get();
         $lowStocks = CurrentStock::with(['item.category', 'item.unit'])
             ->join('parts', 'current_stocks.item_id', '=', 'parts.id')
+            ->whereIn('parts.plant_id', $plantIds)
             ->whereNotNull('parts.min_qty')
             ->whereColumn('current_stocks.qty', '<=', 'parts.min_qty')
             ->orderBy('current_stocks.qty')
             ->select('current_stocks.*')
             ->limit(8)
             ->get();
-        $recentPurchases = Purchase::with('part')->latest('created_at')->limit(5)->get();
-        $recentIssues = Issue::with('part')->latest('created_at')->limit(5)->get();
-        $recentAdjustments = StockAdjustment::with('part')->latest('created_at')->limit(5)->get();
+        $recentPurchases = Purchase::whereIn('plant_id', $plantIds)->with('part')->latest('created_at')->limit(5)->get();
+        $recentIssues = Issue::whereIn('plant_id', $plantIds)->with('part')->latest('created_at')->limit(5)->get();
+        $recentAdjustments = StockAdjustment::whereIn('plant_id', $plantIds)->with('part')->latest('created_at')->limit(5)->get();
 
         return view('dashboard', compact(
             'totalMachines',
@@ -268,7 +290,10 @@ class MachineController extends Controller
             'lowStocks',
             'recentPurchases',
             'recentIssues',
-            'recentAdjustments'
+            'recentAdjustments',
+            'plants',
+            'defaultPlantId',
+            'selectedPlantId'
         ));
     }
 

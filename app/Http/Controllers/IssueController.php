@@ -67,7 +67,10 @@ class IssueController extends Controller
             $query->whereDate('issued_date', '<=', $dateTo);
         }
 
-        $issues = $query->paginate(10)->withQueryString();
+        $issues = $query
+                    ->orderBy('issue_no')
+                    ->paginate(10)
+                    ->withQueryString();
 
         return view('issues.index', compact('issues', 'categories', 'plants', 'defaultPlantId', 'dateFrom', 'dateTo'));
     }
