@@ -23,7 +23,7 @@
                     @method('PUT')
 
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Control No.</label>
                             <input type="text" name="control_no" value="{{ old('control_no', $machine->control_no) }}" class="form-control @error('control_no') is-invalid @enderror">
                             @error('control_no')
@@ -31,18 +31,10 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Machine Name</label>
                             <input type="text" name="name" value="{{ old('name', $machine->name) }}" class="form-control @error('name') is-invalid @enderror">
                             @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Brand</label>
-                            <input type="text" name="brand" value="{{ old('brand', $machine->brand) }}" class="form-control @error('brand') is-invalid @enderror">
-                            @error('brand')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -55,6 +47,15 @@
                             @enderror
                         </div>
 
+
+                        <div class="col-md-4">
+                            <label class="form-label">Brand</label>
+                            <input type="text" name="brand" value="{{ old('brand', $machine->brand) }}" class="form-control @error('brand') is-invalid @enderror">
+                            @error('brand')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-md-4">
                             <label class="form-label">Serial No.</label>
                             <input type="text" name="serial_no" value="{{ old('serial_no', $machine->serial_no) }}" class="form-control @error('serial_no') is-invalid @enderror">
@@ -63,7 +64,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Supplier</label>
                             <input type="text" name="supplier" value="{{ old('supplier', $machine->supplier) }}" class="form-control @error('supplier') is-invalid @enderror">
                             @error('supplier')
@@ -71,15 +72,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Machine Image</label>
-                            <input type="file" name="image" accept="image/*" class="form-control @error('image') is-invalid @enderror">
-                            @error('image')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Arrived Date</label>
                             <input type="date" name="arrived_date" value="{{ old('arrived_date', $machine->arrived_date?->format('Y-m-d')) }}" class="form-control @error('arrived_date') is-invalid @enderror">
                             @error('arrived_date')
@@ -88,9 +81,13 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Location</label>
-                            <input type="text" name="location" value="{{ old('location', $machine->location) }}" class="form-control @error('location') is-invalid @enderror">
-                            @error('location')
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select @error('category') is-invalid @enderror">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category }}" {{ old('category', $machine->category) === $category ? 'selected' : '' }}>{{ $category }}</option>
+                                @endforeach
+                            </select>
+                            @error('category')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -109,13 +106,9 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Category</label>
-                            <select name="category" class="form-select @error('category') is-invalid @enderror">
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category }}" {{ old('category', $machine->category) === $category ? 'selected' : '' }}>{{ $category }}</option>
-                                @endforeach
-                            </select>
-                            @error('category')
+                            <label class="form-label">Location</label>
+                            <input type="text" name="location" value="{{ old('location', $machine->location) }}" class="form-control @error('location') is-invalid @enderror">
+                            @error('location')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -131,6 +124,27 @@
                                 @endforeach
                             </select>
                             @error('plant_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Currency</label>
+                            <select name="currency" class="form-select @error('currency') is-invalid @enderror">
+                                <option value="">Select currency</option>
+                                @foreach(['MMK', 'USD', 'SGD', 'JPY', 'CNY'] as $currency)
+                                    <option value="{{ $currency }}" {{ old('currency', $machine->currency) === $currency ? 'selected' : '' }}>{{ $currency }}</option>
+                                @endforeach
+                            </select>
+                            @error('currency')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" name="unit_price" step="0.01" min="0" value="{{ old('unit_price', $machine->unit_price) }}" class="form-control @error('unit_price') is-invalid @enderror">
+                            @error('unit_price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -159,37 +173,16 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label">Currency</label>
-                            <select name="currency" class="form-select @error('currency') is-invalid @enderror">
-                                <option value="">Select currency</option>
-                                @foreach(['MMK', 'USD', 'SGD', 'JPY', 'CNY'] as $currency)
-                                    <option value="{{ $currency }}" {{ old('currency', $machine->currency) === $currency ? 'selected' : '' }}>{{ $currency }}</option>
-                                @endforeach
-                            </select>
-                            @error('currency')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Unit Price</label>
-                            <input type="number" name="unit_price" step="0.01" min="0" value="{{ old('unit_price', $machine->unit_price) }}" class="form-control @error('unit_price') is-invalid @enderror">
-                            @error('unit_price')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label">Remark</label>
-                            <textarea name="remark" rows="3" class="form-control @error('remark') is-invalid @enderror">{{ old('remark', $machine->remark) }}</textarea>
-                            @error('remark')
+                        <div class="col-md-8">
+                            <label class="form-label">Machine Image</label>
+                            <input type="file" name="image" accept="image/*" class="form-control @error('image') is-invalid @enderror">
+                            @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         @if($machine->image)
-                            <div class="col-12">
+                            <div class="col-md-4">
                                 <label class="form-label">Current Image</label>
                                 <div>
                                     <img src="{{ $machine->image_url }}" alt="Machine image" class="img-fluid rounded" style="max-height: 220px; object-fit: cover;">
@@ -200,6 +193,14 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div class="col-12">
+                            <label class="form-label">Remark</label>
+                            <textarea name="remark" rows="3" class="form-control @error('remark') is-invalid @enderror">{{ old('remark', $machine->remark) }}</textarea>
+                            @error('remark')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="col-12 d-flex align-items-center gap-3">
                             <div class="form-check">
