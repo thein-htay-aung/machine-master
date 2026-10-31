@@ -13,6 +13,8 @@
         .cold-store-hero::after { content: ''; position: absolute; width: 18rem; height: 18rem; right: -6rem; top: -11rem; border: 2.5rem solid rgba(186, 230, 253, .12); border-radius: 50%; }
         .cold-store-hero .hero-content { position: relative; z-index: 1; }
         .cold-store-kicker { color: #bae6fd; font-size: .72rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+        .cold-store-refresh { color: #e0f2fe; border: 1px solid rgba(224, 242, 254, .4); border-radius: .45rem; padding: .15rem .35rem; line-height: 1; }
+        .cold-store-refresh:hover, .cold-store-refresh:focus { color: #fff; background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .7); }
         .cold-store-stat { min-width: 112px; background: rgba(255, 255, 255, .11); border: 1px solid rgba(255, 255, 255, .16); border-radius: .85rem; backdrop-filter: blur(8px); }
         .cold-store-card { border: 1px solid #e7eef5; border-radius: 1rem; box-shadow: 0 .35rem 1.2rem rgba(15, 23, 42, .055); transition: transform .2s ease, box-shadow .2s ease; }
         .cold-store-card:hover { transform: translateY(-3px); box-shadow: 0 .85rem 1.75rem rgba(15, 23, 42, .11); }
@@ -27,7 +29,12 @@
         <section class="cold-store-hero p-3 p-md-4 mb-4">
             <div class="hero-content d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
                 <div>
-                    <div class="cold-store-kicker mb-2"><i class="bi bi-snow2 me-1" aria-hidden="true"></i>Temperature monitoring</div>
+                    <div class="cold-store-kicker mb-2 d-flex align-items-center gap-2">
+                        <span><i class="bi bi-snow2 me-1" aria-hidden="true"></i>Temperature monitoring</span>
+                        <a href="{{ route('cold-stores.index') }}" class="cold-store-refresh" aria-label="Refresh cold store temperatures" title="Refresh">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                        </a>
+                    </div>
                     <h1 class="h3 fw-semibold mb-1">Cold Stores</h1>
                     <p class="mb-0 text-white-50">Latest sensor temperatures, refreshed every five minutes.</p>
                 </div>
