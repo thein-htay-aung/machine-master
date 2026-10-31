@@ -230,6 +230,12 @@
                                 </a>
                             </li>
                             <li class="nav-item mb-1">
+                                <a class="nav-link {{ request()->routeIs('cold-stores.*') ? 'active' : 'text-white-50' }}" href="{{ route('cold-stores.index') }}">
+                                    <i class="bi bi-thermometer-snow sidebar-nav-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-nav-text">Cold Stores</span>
+                                </a>
+                            </li>
+                            <li class="nav-item mb-1">
                                 @php
                                     $partsOpen = request()->routeIs('units.*')
                                         || request()->routeIs('categories.*')
