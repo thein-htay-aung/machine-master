@@ -9,17 +9,22 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class MachinesExport implements FromCollection, WithHeadings, WithMapping
 {
-    public function __construct(private readonly array $filters = [])
+    public function __construct(
+        private readonly array $filters = [],
+        private readonly array $allowedPlantIds = [],
+    )
     {
     }
 
     public function collection()
     {
         return Machine::with(['plant', 'status', 'createdBy', 'updatedBy'])
+            ->whereIn('plant_id', $this->allowedPlantIds)
             ->when($this->filters['control_no'] ?? null, fn ($query, $value) => $query->where('control_no', 'like', '%' . $value . '%'))
             ->when($this->filters['name'] ?? null, fn ($query, $value) => $query->where('name', 'like', '%' . $value . '%'))
             ->when($this->filters['status_id'] ?? null, fn ($query, $value) => $query->where('status_id', $value))
             ->when($this->filters['plant_id'] ?? null, fn ($query, $value) => $query->where('plant_id', $value))
+            ->when($this->filters['category'] ?? null, fn ($query, $value) => $query->where('category', $value))
             ->orderBy('control_no')
             ->get();
     }

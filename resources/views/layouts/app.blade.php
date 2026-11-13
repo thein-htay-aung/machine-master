@@ -299,6 +299,12 @@
                                     <span class="sidebar-nav-text">Cold Stores</span>
                                 </a>
                             </li>
+                            <li class="nav-item mb-1">
+                                <a class="nav-link {{ request()->routeIs('room-monitoring.*') ? 'active' : 'text-white-50' }}" href="{{ route('room-monitoring.index') }}">
+                                    <i class="bi bi-moisture sidebar-nav-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-nav-text">Room Temp &amp; Humidity</span>
+                                </a>
+                            </li>
                             @if(auth()->user()->isSuperAdmin())
                                 <li class="nav-item mb-1">
                                     <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : 'text-white-50' }}" href="{{ route('users.index') }}">

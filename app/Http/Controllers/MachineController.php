@@ -78,7 +78,21 @@ class MachineController extends Controller
 
     public function export(Request $request)
     {
-        return Excel::download(new MachinesExport($request->query()), 'machines.xlsx');
+        $filters = $request->query();
+        $plants = $this->selectablePlants();
+        $selectablePlantIds = $plants->pluck('id')->all();
+        $defaultPlantId = $this->defaultPlantId();
+        $requestedPlantId = $request->input('plant_id');
+
+        if ($requestedPlantId && in_array((int) $requestedPlantId, $selectablePlantIds, true)) {
+            $filters['plant_id'] = (int) $requestedPlantId;
+        } elseif ($defaultPlantId) {
+            $filters['plant_id'] = $defaultPlantId;
+        } else {
+            unset($filters['plant_id']);
+        }
+
+        return Excel::download(new MachinesExport($filters, $selectablePlantIds), 'machines.xlsx');
     }
 
     /**

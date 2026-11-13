@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\ColdStoreController;
+use App\Http\Controllers\RoomMonitoringController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -47,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:viewer,editor,admin,superadmin')->group(function () {
         Route::get('/dashboard', [MachineController::class, 'dashboard'])->name('dashboard');
         Route::get('/cold-stores', [ColdStoreController::class, 'index'])->name('cold-stores.index');
+        Route::get('/room-monitoring', [RoomMonitoringController::class, 'index'])->name('room-monitoring.index');
 
         Route::get('/machines/export', [MachineController::class, 'export'])->name('machines.export');
         Route::resource('machines', MachineController::class)->only(['index', 'show'])->whereNumber('machine');
